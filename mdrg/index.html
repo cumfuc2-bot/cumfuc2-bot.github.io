@@ -1,0 +1,2815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDRG Save Editor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .file-input-section {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .file-input {
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .editor-section {
+            display: none;
+        }
+
+        .main-tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .main-tab {
+            background: #f8f9fa;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            margin-bottom: -2px;
+        }
+
+        .main-tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .sub-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .sub-tab {
+            background: #f8f9fa;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .sub-tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-triple {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .checkbox {
+            margin-right: 8px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .json-editor {
+            width: 100%;
+            height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .website-list,
+        .achievement-list,
+        .flag-list {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .list-item {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background: #e9ecef;
+        }
+
+        .save-slot-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .save-slot-card:hover {
+            background: #e9ecef;
+        }
+
+        .save-slot-card.active {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slot-title {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .email-list {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .email-item {
+            border-bottom: 1px solid #dee2e6;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        .email-item:hover {
+            background: #f8f9fa;
+        }
+
+        .email-item.read {
+            opacity: 0.7;
+        }
+
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .email-id {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .email-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .email-status.read {
+            background: #28a745;
+        }
+
+        .email-status.unread {
+            background: #dc3545;
+        }
+
+        .manager-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .manager-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            padding: 10px;
+            background: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .collapsible:hover {
+            background: #dee2e6;
+        }
+
+        .collapsible-content {
+            display: none;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            margin-bottom: 10px;
+        }
+
+        .collapsible.active+.collapsible-content {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Comprehensive Game Save Editor</h1>
+            <p>Complete editor for all save file data - Global settings, achievements, websites, save slots & more</p>
+        </div>
+
+        <div class="content">
+            <div class="file-input-section">
+                <h3>Load Save File</h3>
+                <p>Select your .mdrg save file to edit all game data</p>
+                <input type="file" id="fileInput" accept=".mdrg" class="file-input">
+                <div id="fileInfo" style="margin-top: 10px; color: #666;"></div>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div id="editorSection" class="editor-section">
+                <div class="main-tabs">
+                    <button class="main-tab active" onclick="switchMainTab('global')">Global Data</button>
+                    <button class="main-tab" onclick="switchMainTab('saves')">Save Slots</button>
+                    <button class="main-tab" onclick="switchMainTab('player')">Player Stats</button>
+                    <button class="main-tab" onclick="switchMainTab('emails')">Emails</button>
+                    <button class="main-tab" onclick="switchMainTab('managers')">Game Managers</button>
+                    <button class="main-tab" onclick="switchMainTab('raw')">Raw JSON</button>
+                </div>
+
+                <!-- Global Data Tab -->
+                <div id="globalTab" class="tab-content active">
+                    <div class="sub-tabs">
+                        <button class="sub-tab active" onclick="switchSubTab('websites')">Websites</button>
+                        <button class="sub-tab" onclick="switchSubTab('achievements')">Achievements</button>
+                        <button class="sub-tab" onclick="switchSubTab('flags')">Flags</button>
+                        <button class="sub-tab" onclick="switchSubTab('autosaves')">AutoSaves</button>
+                    </div>
+
+                    <div id="websitesSubTab" class="tab-content active">
+                        <div style="margin-bottom: 15px;">
+                            <button class="btn btn-success" onclick="addWebsite()">Add Website</button>
+                            <button class="btn btn-danger" onclick="clearWebsites()">Clear All</button>
+                            <span style="margin-left: 15px; color: #666;">Total: <span id="websiteCount">0</span></span>
+                        </div>
+                        <div id="websitesList" class="website-list"></div>
+                    </div>
+
+                    <div id="achievementsSubTab" class="tab-content">
+                        <div style="margin-bottom: 15px;">
+                            <button class="btn btn-success" onclick="addAchievement()">Add Achievement</button>
+                            <button class="btn btn-danger" onclick="clearAchievements()">Clear All</button>
+                            <span style="margin-left: 15px; color: #666;">Total: <span
+                                    id="achievementCount">0</span></span>
+                        </div>
+                        <div id="achievementsList" class="achievement-list"></div>
+                    </div>
+
+                    <div id="flagsSubTab" class="tab-content">
+                        <div style="margin-bottom: 15px;">
+                            <button class="btn btn-success" onclick="addFlag()">Add Flag</button>
+                            <button class="btn btn-danger" onclick="clearFlags()">Clear All</button>
+                            <span style="margin-left: 15px; color: #666;">Total: <span id="flagCount">0</span></span>
+                        </div>
+                        <div id="flagsList" class="flag-list"></div>
+                    </div>
+
+                    <div id="autosavesSubTab" class="tab-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="autoSaveCount">0</div>
+                                <div class="stat-label">AutoSave Slots</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="nextAutoSaveIndex">0</div>
+                                <div class="stat-label">Next AutoSave Index</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Next AutoSave Index</label>
+                            <input type="number" id="nextAutoSaveIndexInput" class="form-control"
+                                style="max-width: 200px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Slots Tab -->
+                <div id="savesTab" class="tab-content">
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-success" onclick="createNewSaveSlot()">Create Save Slot</button>
+                        <span style="margin-left: 15px; color: #666;">Total Slots: <span
+                                id="saveSlotCount">0</span></span>
+                    </div>
+                    <div id="saveSlotsList"></div>
+                </div>
+
+                <!-- Player Stats Tab -->
+                <div id="playerTab" class="tab-content">
+                    <div id="playerStatsContent">
+                        <p>Select a save slot from the Save Slots tab to edit player statistics.</p>
+                    </div>
+                </div>
+
+                <!-- Emails Tab -->
+                <div id="emailsTab" class="tab-content">
+                    <div id="emailsContent">
+                        <p>Select a save slot from the Save Slots tab to edit emails.</p>
+                    </div>
+                </div>
+
+                <!-- Managers Tab -->
+                <div id="managersTab" class="tab-content">
+                    <div id="managersContent">
+                        <p>Select a save slot from the Save Slots tab to edit game managers.</p>
+                    </div>
+                </div>
+
+                <!-- Raw JSON Tab -->
+                <div id="rawTab" class="tab-content">
+                    <p><strong>Advanced:</strong> Edit the raw JSON data directly. Be careful with syntax!</p>
+                    <textarea id="jsonEditor" class="json-editor" placeholder="Raw JSON will appear here..."></textarea>
+                    <div style="margin-top: 10px;">
+                        <button class="btn" onclick="formatJSON()">Format JSON</button>
+                        <button class="btn" onclick="validateJSON()">Validate JSON</button>
+                        <button class="btn btn-success" onclick="applyJSONChanges()">Apply Changes</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #dee2e6; text-align: center;">
+                    <button class="btn btn-success" onclick="downloadModifiedFile()"
+                        style="font-size: 16px; padding: 12px 30px;">
+                        Download Modified Save File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let saveFileData = null;
+        let currentSelectedSlot = null;
+        let currentSlotData = null;
+
+        // File input handling
+        document.getElementById('fileInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    saveFileData = JSON.parse(e.target.result);
+                    loadAllData();
+                    showAlert('✅ Save file loaded successfully!', 'success');
+                } catch (error) {
+                    showAlert('❌ Error parsing save file: ' + error.message, 'danger');
+                }
+            };
+            reader.readAsText(file);
+
+            document.getElementById('fileInfo').textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        });
+
+        function loadAllData() {
+            document.getElementById('editorSection').style.display = 'block';
+
+            updateGlobalData();
+            updateSaveSlots();
+            updateRawTab();
+        }
+
+        function updateGlobalData() {
+            // Update websites
+            updateWebsites();
+            updateAchievements();
+            updateFlags();
+            updateAutoSaves();
+        }
+
+        function updateWebsites() {
+            const websites = saveFileData.visitedWebsites || [];
+            document.getElementById('websiteCount').textContent = websites.length;
+
+            const websitesList = document.getElementById('websitesList');
+            websitesList.innerHTML = '';
+
+            websites.forEach((website, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span>${website}</span>
+                    <button class="btn btn-danger" onclick="removeWebsite(${index})" style="padding: 4px 8px; font-size: 12px;">Remove</button>
+                `;
+                websitesList.appendChild(item);
+            });
+        }
+
+        function updateAchievements() {
+            const achievements = saveFileData.achievements?.values || [];
+            document.getElementById('achievementCount').textContent = achievements.length;
+
+            const achievementsList = document.getElementById('achievementsList');
+            achievementsList.innerHTML = '';
+
+            achievements.forEach((achievement, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span>${achievement}</span>
+                    <button class="btn btn-danger" onclick="removeAchievement(${index})" style="padding: 4px 8px; font-size: 12px;">Remove</button>
+                `;
+                achievementsList.appendChild(item);
+            });
+        }
+
+        function updateFlags() {
+            const flags = saveFileData.flags || {};
+            const flagKeys = flags.keys || [];
+            document.getElementById('flagCount').textContent = flagKeys.length;
+
+            const flagsList = document.getElementById('flagsList');
+            flagsList.innerHTML = '';
+
+            flagKeys.forEach((flag, index) => {
+                const flagValue = flags.values?.[index] || {};
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.style.display = 'block';
+                item.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <strong>${flag}</strong>
+                        <button class="btn btn-danger" onclick="removeFlag(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                    </div>
+                    <div style="font-size: 12px; color: #666;">
+                        First: ${flagValue.f || 'N/A'} | Last: ${flagValue.l || 'N/A'} | Count: ${flagValue.c || 'N/A'}
+                    </div>
+                `;
+                flagsList.appendChild(item);
+            });
+        }
+
+        function updateAutoSaves() {
+            const autoSaves = saveFileData.autoSaves || [];
+            document.getElementById('autoSaveCount').textContent = autoSaves.length;
+            document.getElementById('nextAutoSaveIndex').textContent = saveFileData.nextAutoSaveIndex || 0;
+            document.getElementById('nextAutoSaveIndexInput').value = saveFileData.nextAutoSaveIndex || 0;
+        }
+
+        function updateSaveSlots() {
+            const saves = saveFileData.saves || [];
+            document.getElementById('saveSlotCount').textContent = saves.length;
+
+            const saveSlotsList = document.getElementById('saveSlotsList');
+            saveSlotsList.innerHTML = '';
+
+            saves.forEach((save, index) => {
+                const card = document.createElement('div');
+                card.className = 'save-slot-card';
+                if (currentSelectedSlot === index) {
+                    card.classList.add('active');
+                }
+                card.onclick = () => selectSaveSlot(index);
+
+                const date = new Date(save._time / 10000 - 621355968000000000);
+                card.innerHTML = `
+                    <div class="slot-header">
+                        <span class="slot-title">Slot ${save.slot}</span>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); removeSaveSlot(${index})" style="padding: 4px 8px; font-size: 12px;">Delete</button>
+                    </div>
+                    <div><strong>Notes:</strong> ${save.notes || 'None'}</div>
+                    <div><strong>Description:</strong> ${save.description || 'None'}</div>
+                    <div><strong>In-Game Time:</strong> ${save.ingameTime || 0}</div>
+                    <div><strong>Real Time:</strong> ${date.toLocaleString()}</div>
+                `;
+
+                saveSlotsList.appendChild(card);
+            });
+        }
+
+        function selectSaveSlot(index) {
+            currentSelectedSlot = index;
+            const save = saveFileData.saves[index];
+
+            try {
+                currentSlotData = JSON.parse(save.savedata);
+                updateSaveSlots(); // Refresh to show selection
+                updatePlayerStats();
+                updateEmailsForSlot();
+                updateManagersForSlot();
+                showAlert(`✅ Selected Slot ${save.slot}`, 'success');
+            } catch (error) {
+                showAlert('❌ Error parsing save slot data: ' + error.message, 'danger');
+            }
+        }
+
+        function updatePlayerStats() {
+            if (!currentSlotData) return;
+
+            const playerStatsContent = document.getElementById('playerStatsContent');
+
+            playerStatsContent.innerHTML = `
+                <h3>Money & Resources</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Money</label>
+                        <input type="number" id="money" class="form-control" value="${currentSlotData.money || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Casino Tokens</label>
+                        <input type="number" id="casinoTokens" class="form-control" value="${currentSlotData.casinoTokens || 0}">
+                    </div>
+                </div>
+                
+                <h3>Character Stats</h3>
+                <div class="form-triple">
+                    <div class="form-group">
+                        <label class="form-label">Health</label>
+                        <input type="number" step="0.1" id="health" class="form-control" value="${currentSlotData._health || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mental Health</label>
+                        <input type="number" step="0.1" id="mentalHealth" class="form-control" value="${currentSlotData._mentalHealth || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stamina</label>
+                        <input type="number" step="0.1" id="stamina" class="form-control" value="${currentSlotData._stamina || 0}">
+                    </div>
+                </div>
+                
+                <div class="form-triple">
+                    <div class="form-group">
+                        <label class="form-label">Satiation</label>
+                        <input type="number" step="0.1" id="satiation" class="form-control" value="${currentSlotData._satiation || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Intelligence</label>
+                        <input type="number" id="intelligence" class="form-control" value="${currentSlotData.inteligence || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mood</label>
+                        <input type="number" step="0.1" id="mood" class="form-control" value="${currentSlotData._mood || 0}">
+                    </div>
+                </div>
+                
+                <h3>Game Progress</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Stage</label>
+                        <input type="number" id="stage" class="form-control" value="${currentSlotData.stage || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time</label>
+                        <input type="number" id="gameTime" class="form-control" value="${currentSlotData.time || 0}">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Player Name</label>
+                        <input type="text" id="playerName" class="form-control" value="${currentSlotData.playerName || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bot Name</label>
+                        <input type="text" id="botName" class="form-control" value="${currentSlotData.botName || ''}">
+                    </div>
+                </div>
+                
+                <h3>Streaming Stats</h3>
+                <div class="form-triple">
+                    <div class="form-group">
+                        <label class="form-label">Subscribers</label>
+                        <input type="number" id="subs" class="form-control" value="${currentSlotData.subs || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Followers</label>
+                        <input type="number" id="followers" class="form-control" value="${currentSlotData.followers || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Stream Count</label>
+                        <input type="number" id="streamCount" class="form-control" value="${currentSlotData.streamCount || 0}">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="savePlayerStats()">Save Player Stats</button>
+                </div>
+            `;
+        }
+
+        function updateEmailsForSlot() {
+            if (!currentSlotData) return;
+
+            const emails = currentSlotData._allEmails || [];
+            const emailsContent = document.getElementById('emailsContent');
+
+            emailsContent.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="addNewEmail()">➕ Add Email</button>
+                    <button class="btn btn-danger" onclick="clearAllEmails()">Clear All Emails</button>
+                    <button class="btn" onclick="markAllAsRead()">✅ Mark All Read</button>
+                    <button class="btn" onclick="markAllAsUnread()">❌ Mark All Unread</button>
+                    <span style="margin-left: 15px; color: #666;">Total: ${emails.length}</span>
+                </div>
+                <div id="emailsList" class="email-list"></div>
+            `;
+
+            updateEmailsList();
+        }
+
+        function updateEmailsList() {
+            if (!currentSlotData) return;
+
+            const emails = currentSlotData._allEmails || [];
+            const emailsList = document.getElementById('emailsList');
+
+            if (!emailsList) return;
+
+            emailsList.innerHTML = '';
+
+            emails.forEach((email, index) => {
+                const emailDiv = document.createElement('div');
+                emailDiv.className = `email-item ${email.read ? 'read' : ''}`;
+                emailDiv.onclick = () => editEmail(index);
+
+                emailDiv.innerHTML = `
+                    <div class="email-header">
+                        <span class="email-id">${email.emailId || 'Unknown'}</span>
+                        <span class="email-status ${email.read ? 'read' : 'unread'}">
+                            ${email.read ? '✅ Read' : '❌ Unread'}
+                        </span>
+                    </div>
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
+                        Visible At: ${email.visibleAt || 0} | Event: ${email.onReadEventHolder?.eventEnum || 0}
+                    </div>
+                    <div style="font-size: 12px; color: #999; font-family: monospace;">
+                        Special Values: ${JSON.stringify(email.specialValues || []).substring(0, 100)}${JSON.stringify(email.specialValues || []).length > 100 ? '...' : ''}
+                    </div>
+                `;
+
+                emailsList.appendChild(emailDiv);
+            });
+        }
+
+        function updateManagersForSlot() {
+            if (!currentSlotData) return;
+
+            const managersContent = document.getElementById('managersContent');
+
+            let html = `
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="switchManagerTab('stock')">Stock</button>
+                    <button class="sub-tab" onclick="switchManagerTab('items')">Items</button>
+                    <button class="sub-tab" onclick="switchManagerTab('contracts')">Contracts</button>
+                    <button class="sub-tab" onclick="switchManagerTab('twitch')">CockTwitch</button>
+                    <button class="sub-tab" onclick="switchManagerTab('delivery')">Delivery</button>
+                    <button class="sub-tab" onclick="switchManagerTab('news')">News</button>
+                    <button class="sub-tab" onclick="switchManagerTab('minigames')">Minigames</button>
+                    <button class="sub-tab" onclick="switchManagerTab('other')">⚙️ Other</button>
+                </div>
+                
+                <!-- Stock Manager -->
+                <div id="stockManagerTab" class="tab-content active">
+                    ${generateStockManagerHTML()}
+                </div>
+                
+                <!-- Items Manager -->
+                <div id="itemsManagerTab" class="tab-content">
+                    ${generateItemsManagerHTML()}
+                </div>
+                
+                <!-- Contracts Manager -->
+                <div id="contractsManagerTab" class="tab-content">
+                    ${generateContractsManagerHTML()}
+                </div>
+                
+                <!-- CockTwitch Manager -->
+                <div id="twitchManagerTab" class="tab-content">
+                    ${generateTwitchManagerHTML()}
+                </div>
+                
+                <!-- Delivery Manager -->
+                <div id="deliveryManagerTab" class="tab-content">
+                    ${generateDeliveryManagerHTML()}
+                </div>
+                
+                <!-- News Manager -->
+                <div id="newsManagerTab" class="tab-content">
+                    ${generateNewsManagerHTML()}
+                </div>
+                
+                <!-- Minigames Manager -->
+                <div id="minigamesManagerTab" class="tab-content">
+                    ${generateMinigamesManagerHTML()}
+                </div>
+                
+                <!-- Other Managers -->
+                <div id="otherManagerTab" class="tab-content">
+                    ${generateOtherManagersHTML()}
+                </div>
+            `;
+
+            managersContent.innerHTML = html;
+        }
+
+        function updateRawTab() {
+            if (saveFileData) {
+                document.getElementById('jsonEditor').value = JSON.stringify(saveFileData, null, 2);
+            }
+        }
+
+        // Event handlers for player stats
+        function savePlayerStats() {
+            if (!currentSlotData) return;
+
+            // Update all the player stats from the form
+            currentSlotData.money = parseInt(document.getElementById('money').value) || 0;
+            currentSlotData.casinoTokens = parseInt(document.getElementById('casinoTokens').value) || 0;
+            currentSlotData._health = parseFloat(document.getElementById('health').value) || 0;
+            currentSlotData._mentalHealth = parseFloat(document.getElementById('mentalHealth').value) || 0;
+            currentSlotData._stamina = parseFloat(document.getElementById('stamina').value) || 0;
+            currentSlotData._satiation = parseFloat(document.getElementById('satiation').value) || 0;
+            currentSlotData.inteligence = parseInt(document.getElementById('intelligence').value) || 0;
+            currentSlotData._mood = parseFloat(document.getElementById('mood').value) || 0;
+            currentSlotData.stage = parseInt(document.getElementById('stage').value) || 0;
+            currentSlotData.time = parseInt(document.getElementById('gameTime').value) || 0;
+            currentSlotData.playerName = document.getElementById('playerName').value || '';
+            currentSlotData.botName = document.getElementById('botName').value || '';
+            currentSlotData.subs = parseInt(document.getElementById('subs').value) || 0;
+            currentSlotData.followers = parseInt(document.getElementById('followers').value) || 0;
+            currentSlotData.streamCount = parseInt(document.getElementById('streamCount').value) || 0;
+
+            // Update the save data in the main file
+            saveFileData.saves[currentSelectedSlot].savedata = JSON.stringify(currentSlotData);
+
+            showAlert('✅ Player stats saved!', 'success');
+        }
+
+        // Website management
+        function addWebsite() {
+            const website = prompt('Enter website URL:');
+            if (website) {
+                if (!saveFileData.visitedWebsites) saveFileData.visitedWebsites = [];
+                saveFileData.visitedWebsites.push(website);
+                updateWebsites();
+            }
+        }
+
+        function removeWebsite(index) {
+            if (confirm('Remove this website?')) {
+                saveFileData.visitedWebsites.splice(index, 1);
+                updateWebsites();
+            }
+        }
+
+        function clearWebsites() {
+            if (confirm('Clear all websites?')) {
+                saveFileData.visitedWebsites = [];
+                updateWebsites();
+            }
+        }
+
+        // Achievement management
+        function addAchievement() {
+            const achievement = prompt('Enter achievement name:');
+            if (achievement) {
+                if (!saveFileData.achievements) saveFileData.achievements = { values: [] };
+                if (!saveFileData.achievements.values) saveFileData.achievements.values = [];
+                saveFileData.achievements.values.push(achievement);
+                updateAchievements();
+            }
+        }
+
+        function removeAchievement(index) {
+            if (confirm('Remove this achievement?')) {
+                saveFileData.achievements.values.splice(index, 1);
+                updateAchievements();
+            }
+        }
+
+        function clearAchievements() {
+            if (confirm('Clear all achievements?')) {
+                saveFileData.achievements = { values: [] };
+                updateAchievements();
+            }
+        }
+
+        // Flag management
+        function addFlag() {
+            const flagName = prompt('Enter flag name:');
+            if (!flagName) return;
+
+            const f = prompt('Enter f value (number):');
+            const l = prompt('Enter l value (number):');
+            const c = prompt('Enter c value (number):');
+
+            if (!saveFileData.flags) saveFileData.flags = { keys: [], values: [] };
+            if (!saveFileData.flags.keys) saveFileData.flags.keys = [];
+            if (!saveFileData.flags.values) saveFileData.flags.values = [];
+
+            saveFileData.flags.keys.push(flagName);
+            saveFileData.flags.values.push({
+                f: parseInt(f) || 0,
+                l: parseInt(l) || 0,
+                c: parseInt(c) || 0
+            });
+
+            updateFlags();
+        }
+
+        function removeFlag(index) {
+            if (confirm('Remove this flag?')) {
+                saveFileData.flags.keys.splice(index, 1);
+                saveFileData.flags.values.splice(index, 1);
+                updateFlags();
+            }
+        }
+
+        function clearFlags() {
+            if (confirm('Clear all flags?')) {
+                saveFileData.flags = { keys: [], values: [] };
+                updateFlags();
+            }
+        }
+
+        // Email management
+        function addNewEmail() {
+            const emailId = prompt('Enter Email ID:');
+            if (!emailId) return;
+
+            const newEmail = {
+                read: false,
+                visibleAt: 0,
+                onReadEventHolder: { data: "", eventEnum: 0 },
+                emailId: emailId,
+                specialValues: []
+            };
+
+            if (!currentSlotData._allEmails) {
+                currentSlotData._allEmails = [];
+            }
+
+            currentSlotData._allEmails.push(newEmail);
+            updateEmailsList();
+            showAlert('✅ New email added!', 'success');
+        }
+
+        function editEmail(index) {
+            const email = currentSlotData._allEmails[index];
+
+            const newEmailId = prompt('Email ID:', email.emailId || '');
+            if (newEmailId === null) return;
+
+            const newReadStatus = confirm('Is this email read?');
+            const newVisibleAt = prompt('Visible At:', email.visibleAt || 0);
+            const newSpecialValues = prompt('Special Values (JSON array):', JSON.stringify(email.specialValues || []));
+
+            try {
+                email.emailId = newEmailId;
+                email.read = newReadStatus;
+                email.visibleAt = parseInt(newVisibleAt) || 0;
+                email.specialValues = JSON.parse(newSpecialValues);
+
+                updateEmailsList();
+                showAlert('✅ Email updated successfully!', 'success');
+            } catch (error) {
+                showAlert('❌ Error updating email: ' + error.message, 'danger');
+            }
+        }
+
+        function clearAllEmails() {
+            if (!confirm('Are you sure you want to clear all emails?')) return;
+
+            currentSlotData._allEmails = [];
+            currentSlotData.emails = [];
+            currentSlotData.serializedEmails = [];
+
+            updateEmailsList();
+            showAlert('✅ All emails cleared!', 'success');
+        }
+
+        function markAllAsRead() {
+            if (currentSlotData._allEmails) {
+                currentSlotData._allEmails.forEach(email => email.read = true);
+                updateEmailsList();
+                showAlert('✅ All emails marked as read!', 'success');
+            }
+        }
+
+        function markAllAsUnread() {
+            if (currentSlotData._allEmails) {
+                currentSlotData._allEmails.forEach(email => email.read = false);
+                updateEmailsList();
+                showAlert('✅ All emails marked as unread!', 'success');
+            }
+        }
+
+        // Manager updates
+        function updateManager(managerKey, value) {
+            try {
+                currentSlotData[managerKey] = JSON.parse(value);
+                showAlert(`✅ ${managerKey} updated!`, 'success');
+            } catch (error) {
+                showAlert(`❌ Error updating ${managerKey}: ${error.message}`, 'danger');
+            }
+        }
+
+        function generateStockManagerHTML() {
+            if (!currentSlotData.stockManager) return '<p>No stock manager data found.</p>';
+
+            const companies = currentSlotData.stockManager['<StockCompanies>k__BackingField'] || [];
+
+            let html = `
+                <h3>Stock Market Manager</h3>
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="addStockCompany()">➕ Add Company</button>
+                    <span style="margin-left: 15px; color: #666;">Total Companies: ${companies.length}</span>
+                </div>
+                <div class="stats-grid">
+            `;
+
+            companies.forEach((company, index) => {
+                const name = company['<Name>k__BackingField'] || 'Unknown';
+                const owned = company['OwnedStocksCount'] || 0;
+                const cost = company['OwnedStocksCost'] || 0;
+                const targetPrice = company['<TargetPrice>k__BackingField'] || 0;
+                const priceHistory = company['priceMemorySerialize'] || [];
+                const currentPrice = priceHistory.length > 0 ? priceHistory[priceHistory.length - 1] : 0;
+
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">
+                            ${name}
+                            <button class="btn btn-danger" onclick="removeStockCompany(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-control" value="${name}" onchange="updateStockCompany(${index}, 'name', this.value)">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Owned Stocks</label>
+                                <input type="number" class="form-control" value="${owned}" onchange="updateStockCompany(${index}, 'owned', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Total Cost</label>
+                                <input type="number" step="0.01" class="form-control" value="${cost}" onchange="updateStockCompany(${index}, 'cost', this.value)">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Current Price</label>
+                                <input type="number" step="0.01" class="form-control" value="${currentPrice.toFixed(2)}" readonly style="background: #f8f9fa;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Target Price</label>
+                                <input type="number" step="0.01" class="form-control" value="${targetPrice}" onchange="updateStockCompany(${index}, 'target', this.value)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price History (${priceHistory.length} entries)</label>
+                            <button class="btn btn-warning" onclick="resetStockHistory(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Reset History</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateItemsManagerHTML() {
+            if (!currentSlotData.itemManager) return '<p>No items manager data found.</p>';
+
+            const items = currentSlotData.itemManager;
+            const sets = items.sets || [];
+            const itemsList = items.items || [];
+            const nunOrders = items.nunRepairOrders || [];
+            const clothierOrders = items.clothierOrders || [];
+
+            return `
+                <h3>Items & Equipment Manager</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${sets.length}</div>
+                        <div class="stat-label">Equipment Sets</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${itemsList.length}</div>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${nunOrders.length}</div>
+                        <div class="stat-label">Nun Repair Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${clothierOrders.length}</div>
+                        <div class="stat-label">Clothier Orders</div>
+                    </div>
+                </div>
+                
+                <!-- Equipment Sets Section -->
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="addEquipmentSet()">Add Equipment Set</button>
+                    <button class="btn btn-primary" onclick="addIndividualItem()">Add Individual Item</button>
+                    <button class="btn btn-warning" onclick="addNunRepairOrder()">Add Nun Repair Order</button>
+                    <button class="btn btn-info" onclick="addClothierOrder()">Add Clothier Order</button>
+                    <button class="btn btn-danger" onclick="clearAllItems()">Clear All Items</button>
+                </div>
+                
+                <!-- Tab Navigation for Item Categories -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="switchItemTab('sets')">Equipment Sets (${sets.length})</button>
+                    <button class="sub-tab" onclick="switchItemTab('items')">Individual Items (${itemsList.length})</button>
+                    <button class="sub-tab" onclick="switchItemTab('nunOrders')">Nun Repairs (${nunOrders.length})</button>
+                    <button class="sub-tab" onclick="switchItemTab('clothierOrders')">Clothier Orders (${clothierOrders.length})</button>
+                    <button class="sub-tab" onclick="switchItemTab('raw')">Raw Data</button>
+                </div>
+
+                <!-- Equipment Sets Tab -->
+                <div id="setsItemTab" class="tab-content active">
+                    <h4>Equipment Sets</h4>
+                    <div id="equipmentSets">
+                        ${sets.length === 0 ? '<p>No equipment sets found. Click "Add Equipment Set" to create one.</p>' : sets.map((set, index) => `
+                            <div class="manager-section">
+                                <div class="manager-title">
+                                    ${set.Name || 'Unnamed Set'}
+                                    <div style="float: right;">
+                                        <button class="btn btn-primary" onclick="editEquipmentSetItems(${index})" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit Items</button>
+                                        <button class="btn btn-danger" onclick="removeEquipmentSet(${index})" style="padding: 4px 8px; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Set Name</label>
+                                    <input type="text" class="form-control" value="${set.Name || ''}" onchange="updateEquipmentSet(${index}, 'name', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Set Type</label>
+                                    <select class="form-control" onchange="updateEquipmentSet(${index}, 'type', this.value)">
+                                        <option value="casual" ${(set.Type || 'casual') === 'casual' ? 'selected' : ''}>Casual</option>
+                                        <option value="formal" ${set.Type === 'formal' ? 'selected' : ''}>Formal</option>
+                                        <option value="work" ${set.Type === 'work' ? 'selected' : ''}>Work</option>
+                                        <option value="sleep" ${set.Type === 'sleep' ? 'selected' : ''}>Sleep</option>
+                                        <option value="exercise" ${set.Type === 'exercise' ? 'selected' : ''}>Exercise</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Items in Set (${set.EquippedItems ? set.EquippedItems.length : 0})</label>
+                                    <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; max-height: 100px; overflow-y: auto;">
+                                        ${set.EquippedItems && set.EquippedItems.length > 0 ?
+                    set.EquippedItems.map((item, itemIndex) => `
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; padding: 5px; background: white; border-radius: 3px;">
+                                                    <span style="font-size: 12px;">${item.Name || item.name || 'Unnamed Item'}</span>
+                                                    <button class="btn btn-danger" onclick="removeItemFromSet(${index}, ${itemIndex})" style="padding: 2px 6px; font-size: 10px;">×</button>
+                                                </div>
+                                            `).join('') :
+                    '<em style="font-size: 12px; color: #666;">No items in this set</em>'
+                }
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Individual Items Tab -->
+                <div id="itemsItemTab" class="tab-content">
+                    <h4>Individual Items</h4>
+                    <div id="individualItems">
+                        ${itemsList.length === 0 ? '<p>No individual items found. Click "Add Individual Item" to create one.</p>' : itemsList.map((item, index) => `
+                            <div class="manager-section">
+                                <div class="manager-title">
+                                    ${item.Name || item.name || 'Unnamed Item'}
+                                    <button class="btn btn-danger" onclick="removeIndividualItem(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" value="${item.Name || item.name || ''}" onchange="updateIndividualItem(${index}, 'name', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-control" onchange="updateIndividualItem(${index}, 'category', this.value)">
+                                        <option value="clothing" ${(item.Category || item.category || 'clothing') === 'clothing' ? 'selected' : ''}>Clothing</option>
+                                        <option value="accessory" ${(item.Category || item.category) === 'accessory' ? 'selected' : ''}>Accessory</option>
+                                        <option value="tool" ${(item.Category || item.category) === 'tool' ? 'selected' : ''}>Tool</option>
+                                        <option value="consumable" ${(item.Category || item.category) === 'consumable' ? 'selected' : ''}>Consumable</option>
+                                        <option value="other" ${(item.Category || item.category) === 'other' ? 'selected' : ''}>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Condition (%)</label>
+                                    <input type="number" class="form-control" min="0" max="100" value="${item.Condition || item.condition || 100}" onchange="updateIndividualItem(${index}, 'condition', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Price ($)</label>
+                                    <input type="number" class="form-control" min="0" step="0.01" value="${item.Price || item.price || 0}" onchange="updateIndividualItem(${index}, 'price', this.value)">
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Nun Repair Orders Tab -->
+                <div id="nunOrdersItemTab" class="tab-content">
+                    <h4>Nun Repair Orders</h4>
+                    <div id="nunRepairOrders">
+                        ${nunOrders.length === 0 ? '<p>No nun repair orders found. Click "Add Nun Repair Order" to create one.</p>' : nunOrders.map((order, index) => `
+                            <div class="manager-section">
+                                <div class="manager-title">
+                                    Repair Order #${index + 1}
+                                    <button class="btn btn-danger" onclick="removeNunRepairOrder(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" value="${order.ItemName || order.itemName || ''}" onchange="updateNunRepairOrder(${index}, 'itemName', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Repair Cost ($)</label>
+                                    <input type="number" class="form-control" min="0" step="0.01" value="${order.Cost || order.cost || 0}" onchange="updateNunRepairOrder(${index}, 'cost', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-control" onchange="updateNunRepairOrder(${index}, 'status', this.value)">
+                                        <option value="pending" ${(order.Status || order.status || 'pending') === 'pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="in_progress" ${(order.Status || order.status) === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                                        <option value="completed" ${(order.Status || order.status) === 'completed' ? 'selected' : ''}>Completed</option>
+                                        <option value="cancelled" ${(order.Status || order.status) === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Clothier Orders Tab -->
+                <div id="clothierOrdersItemTab" class="tab-content">
+                    <h4>Clothier Orders</h4>
+                    <div id="clothierOrders">
+                        ${clothierOrders.length === 0 ? '<p>No clothier orders found. Click "Add Clothier Order" to create one.</p>' : clothierOrders.map((order, index) => `
+                            <div class="manager-section">
+                                <div class="manager-title">
+                                    Clothier Order #${index + 1}
+                                    <button class="btn btn-danger" onclick="removeClothierOrder(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" value="${order.ItemName || order.itemName || ''}" onchange="updateClothierOrder(${index}, 'itemName', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Order Cost ($)</label>
+                                    <input type="number" class="form-control" min="0" step="0.01" value="${order.Cost || order.cost || 0}" onchange="updateClothierOrder(${index}, 'cost', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Delivery Date</label>
+                                    <input type="date" class="form-control" value="${order.DeliveryDate || order.deliveryDate || ''}" onchange="updateClothierOrder(${index}, 'deliveryDate', this.value)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-control" onchange="updateClothierOrder(${index}, 'status', this.value)">
+                                        <option value="ordered" ${(order.Status || order.status || 'ordered') === 'ordered' ? 'selected' : ''}>Ordered</option>
+                                        <option value="in_production" ${(order.Status || order.status) === 'in_production' ? 'selected' : ''}>In Production</option>
+                                        <option value="shipped" ${(order.Status || order.status) === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                        <option value="delivered" ${(order.Status || order.status) === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Raw Data Tab -->
+                <div id="rawItemTab" class="tab-content">
+                    <h4>Raw Items Data</h4>
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="exportItemsData()">Export Items JSON</button>
+                        <button class="btn btn-success" onclick="importItemsData()">Import Items JSON</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow-y: auto;">
+${JSON.stringify(items, null, 2)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateContractsManagerHTML() {
+            if (!currentSlotData.cocktractManager) return '<p>No contracts manager data found.</p>';
+
+            const contracts = currentSlotData.cocktractManager;
+            const available = contracts.AvailableContracts || [];
+            const current = contracts.CurrentContracts || [];
+            const past = contracts.PastContracts || [];
+            const respect = contracts.globalRespect || 0;
+            const partners = contracts['<CocktractPartners>k__BackingField'] || [];
+
+            return `
+                <h3>Contracts Manager</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${available.length}</div>
+                        <div class="stat-label">Available Contracts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${current.length}</div>
+                        <div class="stat-label">Current Contracts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${past.length}</div>
+                        <div class="stat-label">Completed Contracts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${partners.length}</div>
+                        <div class="stat-label">Partners</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Global Respect</label>
+                    <input type="number" step="0.0001" class="form-control" value="${respect}" onchange="updateContractRespect(this.value)" style="max-width: 200px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="clearAvailableContracts()">Clear Available</button>
+                    <button class="btn btn-warning" onclick="clearCurrentContracts()">⏸️ Clear Current</button>
+                    <button class="btn btn-danger" onclick="clearPastContracts()">Clear History</button>
+                </div>
+                
+                <h4>Contract Partners</h4>
+                <div class="manager-section">
+                    ${partners.map((partner, index) => {
+                const name = partner['<Name>k__BackingField'] || 'Unknown';
+                const respect = partner['<Respect>k__BackingField'] || 0;
+                return `
+                            <div class="list-item">
+                                <span><strong>${name}</strong> - Respect: ${respect.toFixed(4)}</span>
+                                <button class="btn btn-warning" onclick="editPartner(${index})" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="showRawContractsData()">View Raw Contract Data</button>
+                </div>
+            `;
+        }
+
+        function generateTwitchManagerHTML() {
+            if (!currentSlotData.cockTwitchManager) return '<p>No CockTwitch manager data found.</p>';
+
+            const twitch = currentSlotData.cockTwitchManager;
+            const streamers = twitch._streamers || [];
+
+            return `
+                <h3>CockTwitch Manager</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${streamers.length}</div>
+                        <div class="stat-label">Total Streamers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${streamers.reduce((sum, s) => sum + (s['<Followers>k__BackingField'] || 0), 0).toLocaleString()}</div>
+                        <div class="stat-label">Total Followers</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="addStreamer()">➕ Add Streamer</button>
+                    <button class="btn btn-danger" onclick="clearStreamers()">Clear All</button>
+                </div>
+                
+                <h4>Streamers</h4>
+                <div id="streamersList">
+                    ${streamers.map((streamer, index) => {
+                const name = streamer['<Name>k__BackingField'] || 'Unknown';
+                const followers = streamer['<Followers>k__BackingField'] || 0;
+                const type = streamer['<Type>k__BackingField'] || 0;
+                const earliestHour = streamer['<EarliestHour>k__BackingField'] || 0;
+                const latestHour = streamer['<LatestHour>k__BackingField'] || 0;
+
+                return `
+                            <div class="manager-section">
+                                <div class="manager-title">
+                                    ${name}
+                                    <button class="btn btn-danger" onclick="removeStreamer(${index})" style="float: right; padding: 4px 8px; font-size: 12px;">Remove</button>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Streamer Name</label>
+                                        <input type="text" class="form-control" value="${name}" onchange="updateStreamer(${index}, 'name', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Followers</label>
+                                        <input type="number" class="form-control" value="${followers}" onchange="updateStreamer(${index}, 'followers', this.value)">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Type</label>
+                                        <input type="number" class="form-control" value="${type}" onchange="updateStreamer(${index}, 'type', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Stream Hours</label>
+                                        <div class="form-row">
+                                            <input type="number" class="form-control" value="${earliestHour}" onchange="updateStreamer(${index}, 'earliest', this.value)" placeholder="Start">
+                                            <input type="number" class="form-control" value="${latestHour}" onchange="updateStreamer(${index}, 'latest', this.value)" placeholder="End">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+            }).join('')}
+                </div>
+            `;
+        }
+
+        function generateDeliveryManagerHTML() {
+            if (!currentSlotData.deliveryManager) return '<p>No delivery manager data found.</p>';
+
+            const delivery = currentSlotData.deliveryManager;
+            const deliveries = delivery['<Deliveries>k__BackingField'] || [];
+
+            return `
+                <h3>Delivery Manager</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${deliveries.length}</div>
+                        <div class="stat-label">Active Deliveries</div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <button class="btn btn-success" onclick="addDelivery()">➕ Add Delivery</button>
+                    <button class="btn btn-danger" onclick="clearDeliveries()">Clear All</button>
+                </div>
+                
+                ${deliveries.length > 0 ? `
+                    <h4>Current Deliveries</h4>
+                    <div class="manager-section">
+                        ${deliveries.map((delivery, index) => `
+                            <div class="list-item">
+                                <span>Delivery ${index + 1}</span>
+                                <button class="btn btn-warning" onclick="editDelivery(${index})" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : '<p>No active deliveries.</p>'}
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="showRawDeliveryData()">View Raw Delivery Data</button>
+                </div>
+            `;
+        }
+
+        function generateNewsManagerHTML() {
+            if (!currentSlotData.newsDataManager) return '<p>No news manager data found.</p>';
+
+            const news = currentSlotData.newsDataManager;
+
+            return `
+                <h3>News Manager</h3>
+                
+                <div class="manager-section">
+                    <h4>News Articles</h4>
+                    ${Object.keys(news).map(newsType => `
+                        <div class="collapsible" onclick="toggleCollapsible(this)">
+                            ${newsType}
+                        </div>
+                        <div class="collapsible-content">
+                            <textarea class="form-control" rows="8" style="font-family: monospace; font-size: 12px;" 
+                                onchange="updateNewsArticle('${newsType}', this.value)">${JSON.stringify(news[newsType], null, 2)}</textarea>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function generateMinigamesManagerHTML() {
+            let html = '<h3>Minigames Manager</h3>';
+
+            // Cooking Minigame
+            if (currentSlotData.cookingMinigameManager) {
+                const cooking = currentSlotData.cookingMinigameManager;
+                const saves = cooking.saves && cooking.saves._s ? cooking.saves._s : [];
+
+                // Calculate total statistics
+                let totalPlayed = 0;
+                let totalFinished = 0;
+                let totalScores = 0;
+                let bestScore = 0;
+                let bestAccuracy = 0;
+                let totalGreats = 0;
+                let totalGoods = 0;
+                let totalBads = 0;
+                let totalMisses = 0;
+                let bestCombo = 0;
+
+                saves.forEach(save => {
+                    totalPlayed += save.TimesPlayed || 0;
+                    totalFinished += save.TimesFinished || 0;
+                    totalScores += (save._allScores || []).length;
+
+                    (save._allScores || []).forEach(score => {
+                        bestScore = Math.max(bestScore, score.RawScore || 0);
+                        bestAccuracy = Math.max(bestAccuracy, score.AccuracyScore || 0);
+                        totalGreats += score.GreatCount || 0;
+                        totalGoods += score.GoodCount || 0;
+                        totalBads += score.BadCount || 0;
+                        totalMisses += score.MissCount || 0;
+                        bestCombo = Math.max(bestCombo, score.MaxCombo || 0);
+                    });
+                });
+
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">
+                            Cooking Minigame
+                            <button class="btn btn-primary" onclick="addCookingSave()" style="float: right; padding: 4px 8px; font-size: 12px; margin-left: 5px;">Add Save</button>
+                            <button class="btn btn-danger" onclick="clearCookingSaves()" style="float: right; padding: 4px 8px; font-size: 12px;">Clear All</button>
+                        </div>
+                        
+                        <!-- Overall Statistics -->
+                        <div class="stats-grid" style="margin-bottom: 15px;">
+                            <div class="stat-card">
+                                <div class="stat-value">${saves.length}</div>
+                                <div class="stat-label">Save Slots</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${totalPlayed}</div>
+                                <div class="stat-label">Total Played</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${totalFinished}</div>
+                                <div class="stat-label">Total Finished</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${totalScores}</div>
+                                <div class="stat-label">Total Scores</div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Statistics -->
+                        <div class="stats-grid" style="margin-bottom: 15px;">
+                            <div class="stat-card">
+                                <div class="stat-value">${bestScore.toLocaleString()}</div>
+                                <div class="stat-label">Best Score</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${bestAccuracy.toFixed(1)}%</div>
+                                <div class="stat-label">Best Accuracy</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${bestCombo}</div>
+                                <div class="stat-label">Best Combo</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${totalFinished > 0 ? ((totalFinished / totalPlayed) * 100).toFixed(1) : 0}%</div>
+                                <div class="stat-label">Completion Rate</div>
+                            </div>
+                        </div>
+
+                        <!-- Hit Statistics -->
+                        <div class="stats-grid" style="margin-bottom: 20px;">
+                            <div class="stat-card" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                <div class="stat-value">${totalGreats}</div>
+                                <div class="stat-label">Great Hits</div>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #17a2b8, #6f42c1);">
+                                <div class="stat-value">${totalGoods}</div>
+                                <div class="stat-label">Good Hits</div>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                                <div class="stat-value">${totalBads}</div>
+                                <div class="stat-label">Bad Hits</div>
+                            </div>
+                            <div class="stat-card" style="background: linear-gradient(135deg, #dc3545, #e83e8c);">
+                                <div class="stat-value">${totalMisses}</div>
+                                <div class="stat-label">Misses</div>
+                            </div>
+                        </div>
+
+                        <!-- Individual Save Data -->
+                        <h4 style="margin-bottom: 15px;">Individual Save Data</h4>
+                        ${saves.length === 0 ? '<p>No cooking saves found. Click "Add Save" to create one.</p>' : saves.map((save, saveIndex) => {
+                    const scores = save._allScores || [];
+                    const playRate = save.TimesPlayed > 0 ? ((save.TimesFinished / save.TimesPlayed) * 100).toFixed(1) : 0;
+
+                    return `
+                                <div class="manager-section" style="margin-bottom: 15px;">
+                                    <div class="manager-title">
+                                        Save Slot ${save._key._id} 
+                                        <div style="float: right;">
+                                            <button class="btn btn-success" onclick="addCookingScore(${saveIndex})" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;">Add Score</button>
+                                            <button class="btn btn-danger" onclick="removeCookingSave(${saveIndex})" style="padding: 4px 8px; font-size: 12px;">Remove</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Save Statistics -->
+                                    <div class="stats-grid" style="margin-bottom: 10px;">
+                                        <div class="stat-card">
+                                            <div class="stat-value">${save.TimesPlayed || 0}</div>
+                                            <div class="stat-label">Times Played</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-value">${save.TimesFinished || 0}</div>
+                                            <div class="stat-label">Times Finished</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-value">${scores.length}</div>
+                                            <div class="stat-label">Recorded Scores</div>
+                                        </div>
+                                        <div class="stat-card">
+                                            <div class="stat-value">${playRate}%</div>
+                                            <div class="stat-label">Completion Rate</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Edit Save Properties -->
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                                        <div class="form-group">
+                                            <label class="form-label">Times Played</label>
+                                            <input type="number" class="form-control" min="0" value="${save.TimesPlayed || 0}" 
+                                                   onchange="updateCookingSave(${saveIndex}, 'TimesPlayed', parseInt(this.value) || 0)">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Times Finished</label>
+                                            <input type="number" class="form-control" min="0" value="${save.TimesFinished || 0}" 
+                                                   onchange="updateCookingSave(${saveIndex}, 'TimesFinished', parseInt(this.value) || 0)">
+                                        </div>
+                                    </div>
+
+                                    <!-- Score Records -->
+                                    ${scores.length > 0 ? `
+                                        <h5>Score Records</h5>
+                                        <div style="max-height: 300px; overflow-y: auto;">
+                                            ${scores.map((score, scoreIndex) => {
+                        const totalNotes = (score.GreatCount || 0) + (score.GoodCount || 0) + (score.BadCount || 0) + (score.MissCount || 0);
+                        const accuracy = totalNotes > 0 ? (((score.GreatCount || 0) + (score.GoodCount || 0)) / totalNotes * 100).toFixed(1) : 0;
+
+                        return `
+                                                    <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 4px; background: #f8f9fa;">
+                                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                                            <strong>Score #${scoreIndex + 1}</strong>
+                                                            <div>
+                                                                <button class="btn btn-primary" onclick="editCookingScore(${saveIndex}, ${scoreIndex})" style="padding: 2px 6px; font-size: 10px; margin-right: 5px;">Edit</button>
+                                                                <button class="btn btn-danger" onclick="removeCookingScore(${saveIndex}, ${scoreIndex})" style="padding: 2px 6px; font-size: 10px;">×</button>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px;">
+                                                            <div class="stat-card" style="padding: 8px;">
+                                                                <div class="stat-value" style="font-size: 14px;">${(score.RawScore || 0).toLocaleString()}</div>
+                                                                <div class="stat-label" style="font-size: 10px;">Raw Score</div>
+                                                            </div>
+                                                            <div class="stat-card" style="padding: 8px;">
+                                                                <div class="stat-value" style="font-size: 14px;">${accuracy}%</div>
+                                                                <div class="stat-label" style="font-size: 10px;">Accuracy</div>
+                                                            </div>
+                                                            <div class="stat-card" style="padding: 8px;">
+                                                                <div class="stat-value" style="font-size: 14px;">${score.MaxCombo || 0}</div>
+                                                                <div class="stat-label" style="font-size: 10px;">Max Combo</div>
+                                                            </div>
+                                                            <div class="stat-card" style="padding: 8px;">
+                                                                <div class="stat-value" style="font-size: 14px;">${score.IsComplete ? 'Yes' : 'No'}</div>
+                                                                <div class="stat-label" style="font-size: 10px;">Complete</div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                                                            <div style="text-align: center; padding: 4px; background: #28a745; color: white; border-radius: 3px; font-size: 12px;">
+                                                                Great: ${score.GreatCount || 0}
+                                                            </div>
+                                                            <div style="text-align: center; padding: 4px; background: #17a2b8; color: white; border-radius: 3px; font-size: 12px;">
+                                                                Good: ${score.GoodCount || 0}
+                                                            </div>
+                                                            <div style="text-align: center; padding: 4px; background: #ffc107; color: black; border-radius: 3px; font-size: 12px;">
+                                                                Bad: ${score.BadCount || 0}
+                                                            </div>
+                                                            <div style="text-align: center; padding: 4px; background: #dc3545; color: white; border-radius: 3px; font-size: 12px;">
+                                                                Miss: ${score.MissCount || 0}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                    }).join('')}
+                                        </div>
+                                    ` : '<p style="margin-top: 10px; color: #666; font-style: italic;">No scores recorded for this save.</p>'}
+                                </div>
+                            `;
+                }).join('')}
+                        
+                        <!-- Raw Data Access -->
+                        <div class="collapsible" onclick="toggleCollapsible(this)" style="margin-top: 20px;">
+                            Raw Cooking Data (Advanced)
+                        </div>
+                        <div class="collapsible-content">
+                            <div style="margin-bottom: 10px;">
+                                <button class="btn btn-primary" onclick="exportCookingData()">Export JSON</button>
+                                <button class="btn btn-success" onclick="importCookingData()">Import JSON</button>
+                            </div>
+                            <textarea class="form-control" rows="8" style="font-family: monospace; font-size: 12px;" 
+                                onchange="updateManager('cookingMinigameManager', JSON.parse(this.value))">${JSON.stringify(cooking, null, 2)}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Fishing Minigame
+            if (currentSlotData.fishingMinigameManager) {
+                const fishing = currentSlotData.fishingMinigameManager;
+                const saves = fishing._serializedSaves || [];
+                const tipSeed = fishing._fishingTipSeed || 0;
+
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">Fishing Minigame</div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${saves.length}</div>
+                                <div class="stat-label">Fishing Saves</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${tipSeed}</div>
+                                <div class="stat-label">Tip Seed</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Fishing Tip Seed</label>
+                            <input type="number" class="form-control" value="${tipSeed}" onchange="updateFishingTipSeed(this.value)" style="max-width: 200px;">
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-danger" onclick="clearFishingSaves()">Clear Fishing Saves</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        function generateOtherManagersHTML() {
+            let html = '<h3>⚙️ Other Managers</h3>';
+
+            // Bot Status App Manager
+            if (currentSlotData.botStatusAppManager) {
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">Bot Status App Manager</div>
+                        <div class="collapsible" onclick="toggleCollapsible(this)">
+                            Console Style Data
+                        </div>
+                        <div class="collapsible-content">
+                            <textarea class="form-control" rows="6" style="font-family: monospace; font-size: 12px;" 
+                                onchange="updateManager('botStatusAppManager', JSON.parse(this.value))">${JSON.stringify(currentSlotData.botStatusAppManager, null, 2)}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Join Us Blog Manager
+            if (currentSlotData.joinUsBlogManager) {
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">Join Us Blog Manager</div>
+                        <div class="collapsible" onclick="toggleCollapsible(this)">
+                            Blog Saves Data
+                        </div>
+                        <div class="collapsible-content">
+                            <textarea class="form-control" rows="6" style="font-family: monospace; font-size: 12px;" 
+                                onchange="updateManager('joinUsBlogManager', JSON.parse(this.value))">${JSON.stringify(currentSlotData.joinUsBlogManager, null, 2)}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Event Manager
+            if (currentSlotData.eventManager) {
+                const events = currentSlotData.eventManager._events || [];
+                html += `
+                    <div class="manager-section">
+                        <div class="manager-title">Event Manager</div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${events.length}</div>
+                                <div class="stat-label">Active Events</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-danger" onclick="clearEvents()">Clear All Events</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
+        // Save slot management
+        function createNewSaveSlot() {
+            const slotNumber = prompt('Enter slot number:');
+            if (!slotNumber) return;
+
+            const newSave = {
+                notes: "",
+                description: "",
+                _time: Date.now() * 10000 + 621355968000000000, // Convert to .NET ticks
+                ingameTime: 0,
+                slot: parseInt(slotNumber),
+                savedata: JSON.stringify({
+                    emails: [],
+                    serializedEmails: [],
+                    _allEmails: [],
+                    gameVersion: "1.0",
+                    money: 100,
+                    _health: 100,
+                    _mentalHealth: 100,
+                    playerName: "Player",
+                    botName: "Bot"
+                })
+            };
+
+            saveFileData.saves.push(newSave);
+            updateSaveSlots();
+            showAlert('✅ New save slot created!', 'success');
+        }
+
+        function removeSaveSlot(index) {
+            if (confirm('Delete this save slot?')) {
+                saveFileData.saves.splice(index, 1);
+                if (currentSelectedSlot === index) {
+                    currentSelectedSlot = null;
+                    currentSlotData = null;
+                    document.getElementById('playerStatsContent').innerHTML = '<p>Select a save slot to edit player statistics.</p>';
+                    document.getElementById('emailsContent').innerHTML = '<p>Select a save slot to edit emails.</p>';
+                    document.getElementById('managersContent').innerHTML = '<p>Select a save slot to edit game managers.</p>';
+                }
+                updateSaveSlots();
+                showAlert('✅ Save slot deleted!', 'success');
+            }
+        }
+
+        // JSON editing functions
+        function formatJSON() {
+            try {
+                const parsed = JSON.parse(document.getElementById('jsonEditor').value);
+                document.getElementById('jsonEditor').value = JSON.stringify(parsed, null, 2);
+                showAlert('✅ JSON formatted!', 'success');
+            } catch (error) {
+                showAlert('❌ Invalid JSON: ' + error.message, 'danger');
+            }
+        }
+
+        function validateJSON() {
+            try {
+                JSON.parse(document.getElementById('jsonEditor').value);
+                showAlert('✅ JSON is valid!', 'success');
+            } catch (error) {
+                showAlert('❌ Invalid JSON: ' + error.message, 'danger');
+            }
+        }
+
+        function applyJSONChanges() {
+            try {
+                saveFileData = JSON.parse(document.getElementById('jsonEditor').value);
+                loadAllData();
+                showAlert('✅ JSON changes applied!', 'success');
+            } catch (error) {
+                showAlert('❌ Error applying changes: ' + error.message, 'danger');
+            }
+        }
+
+        // Download function
+        function downloadModifiedFile() {
+            if (!saveFileData) {
+                showAlert('❌ No save data loaded!', 'danger');
+                return;
+            }
+
+            // Update nextAutoSaveIndex if changed
+            const nextIndexInput = document.getElementById('nextAutoSaveIndexInput');
+            if (nextIndexInput) {
+                saveFileData.nextAutoSaveIndex = parseInt(nextIndexInput.value) || 0;
+            }
+
+            // Update current slot data if selected
+            if (currentSelectedSlot !== null && currentSlotData) {
+                saveFileData.saves[currentSelectedSlot].savedata = JSON.stringify(currentSlotData);
+            }
+
+            // Download the file
+            const modifiedJson = JSON.stringify(saveFileData, null, 2);
+            const blob = new Blob([modifiedJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'modified_save.mdrg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showAlert('✅ Modified save file downloaded!', 'success');
+        }
+
+        // Manager-specific functions
+        function switchManagerTab(tabName) {
+            // Update manager tab buttons
+            const parentTab = document.getElementById('managersContent');
+            parentTab.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update manager tab content
+            parentTab.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            parentTab.querySelector('#' + tabName + 'ManagerTab').classList.add('active');
+        }
+
+        // Stock Manager Functions
+        function updateStockCompany(index, field, value) {
+            const companies = currentSlotData.stockManager['<StockCompanies>k__BackingField'];
+            const company = companies[index];
+
+            switch (field) {
+                case 'name':
+                    company['<Name>k__BackingField'] = value;
+                    break;
+                case 'owned':
+                    company['OwnedStocksCount'] = parseInt(value) || 0;
+                    break;
+                case 'cost':
+                    company['OwnedStocksCost'] = parseFloat(value) || 0;
+                    break;
+                case 'target':
+                    company['<TargetPrice>k__BackingField'] = parseFloat(value) || 0;
+                    break;
+            }
+
+            updateManagersForSlot();
+            showAlert('✅ Stock company updated!', 'success');
+        }
+
+        function addStockCompany() {
+            const name = prompt('Enter company name:');
+            if (!name) return;
+
+            const newCompany = {
+                '<Name>k__BackingField': name,
+                'OwnedStocksCount': 0,
+                'OwnedStocksCost': 0,
+                '<TargetPrice>k__BackingField': 100,
+                'priceMemorySerialize': [100]
+            };
+
+            if (!currentSlotData.stockManager) currentSlotData.stockManager = { '<StockCompanies>k__BackingField': [] };
+            currentSlotData.stockManager['<StockCompanies>k__BackingField'].push(newCompany);
+
+            updateManagersForSlot();
+            showAlert('✅ New stock company added!', 'success');
+        }
+
+        function removeStockCompany(index) {
+            if (confirm('Remove this stock company?')) {
+                currentSlotData.stockManager['<StockCompanies>k__BackingField'].splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Stock company removed!', 'success');
+            }
+        }
+
+        // Streamer Functions
+        function updateStreamer(index, field, value) {
+            const streamers = currentSlotData.cockTwitchManager._streamers;
+            const streamer = streamers[index];
+
+            switch (field) {
+                case 'name':
+                    streamer['<Name>k__BackingField'] = value;
+                    break;
+                case 'followers':
+                    streamer['<Followers>k__BackingField'] = parseInt(value) || 0;
+                    break;
+                case 'type':
+                    streamer['<Type>k__BackingField'] = parseInt(value) || 0;
+                    break;
+                case 'earliest':
+                    streamer['<EarliestHour>k__BackingField'] = parseInt(value) || 0;
+                    break;
+                case 'latest':
+                    streamer['<LatestHour>k__BackingField'] = parseInt(value) || 0;
+                    break;
+            }
+
+            showAlert('✅ Streamer updated!', 'success');
+        }
+
+        function addStreamer() {
+            const name = prompt('Enter streamer name:');
+            if (!name) return;
+
+            const newStreamer = {
+                '<Name>k__BackingField': name,
+                '<EarliestHour>k__BackingField': 9,
+                '<LatestHour>k__BackingField': 21,
+                '<Followers>k__BackingField': 1000,
+                '<Type>k__BackingField': 1,
+                'seed': Math.floor(Math.random() * 2000000000) - 1000000000
+            };
+
+            if (!currentSlotData.cockTwitchManager) currentSlotData.cockTwitchManager = { _streamers: [] };
+            currentSlotData.cockTwitchManager._streamers.push(newStreamer);
+
+            updateManagersForSlot();
+            showAlert('✅ New streamer added!', 'success');
+        }
+
+        function removeStreamer(index) {
+            if (confirm('Remove this streamer?')) {
+                currentSlotData.cockTwitchManager._streamers.splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Streamer removed!', 'success');
+            }
+        }
+
+        // Contract Functions
+        function updateContractRespect(value) {
+            currentSlotData.cocktractManager.globalRespect = parseFloat(value) || 0;
+            showAlert('✅ Global respect updated!', 'success');
+        }
+
+        function clearAvailableContracts() {
+            if (confirm('Clear all available contracts?')) {
+                currentSlotData.cocktractManager.AvailableContracts = [];
+                updateManagersForSlot();
+                showAlert('✅ Available contracts cleared!', 'success');
+            }
+        }
+
+        function clearCurrentContracts() {
+            if (confirm('Clear all current contracts?')) {
+                currentSlotData.cocktractManager.CurrentContracts = [];
+                updateManagersForSlot();
+                showAlert('✅ Current contracts cleared!', 'success');
+            }
+        }
+
+        function clearPastContracts() {
+            if (confirm('Clear contract history?')) {
+                currentSlotData.cocktractManager.PastContracts = [];
+                updateManagersForSlot();
+                showAlert('✅ Contract history cleared!', 'success');
+            }
+        }
+
+        // Fishing Functions
+        function updateFishingTipSeed(value) {
+            currentSlotData.fishingMinigameManager._fishingTipSeed = parseInt(value) || 0;
+            showAlert('✅ Fishing tip seed updated!', 'success');
+        }
+
+        function clearFishingSaves() {
+            if (confirm('Clear all fishing saves?')) {
+                currentSlotData.fishingMinigameManager._serializedSaves = [];
+                updateManagersForSlot();
+                showAlert('✅ Fishing saves cleared!', 'success');
+            }
+        }
+
+        // News Functions
+        function updateNewsArticle(newsType, value) {
+            try {
+                currentSlotData.newsDataManager[newsType] = JSON.parse(value);
+                showAlert(`✅ ${newsType} updated!`, 'success');
+            } catch (error) {
+                showAlert(`❌ Error updating ${newsType}: ${error.message}`, 'danger');
+            }
+        }
+
+        // Generic Functions
+        function clearDeliveries() {
+            if (confirm('Clear all deliveries?')) {
+                currentSlotData.deliveryManager['<Deliveries>k__BackingField'] = [];
+                updateManagersForSlot();
+                showAlert('✅ Deliveries cleared!', 'success');
+            }
+        }
+
+        function clearEvents() {
+            if (confirm('Clear all events?')) {
+                currentSlotData.eventManager._events = [];
+                updateManagersForSlot();
+                showAlert('✅ Events cleared!', 'success');
+            }
+        }
+
+        // ===== ADVANCED ITEM MANAGER FUNCTIONS =====
+
+        // Tab switching for item manager
+        function switchItemTab(tabName) {
+            // Remove active from all item manager sub-tabs (those that call switchItemTab)
+            document.querySelectorAll('[onclick*="switchItemTab"]').forEach(tab => tab.classList.remove('active'));
+
+            // Add active to clicked tab
+            event.target.classList.add('active');
+
+            // Remove active from all item tab content (those ending with 'ItemTab')
+            document.querySelectorAll('[id$="ItemTab"]').forEach(content => content.classList.remove('active'));
+
+            // Add active to target content
+            const targetTab = document.getElementById(tabName + 'ItemTab');
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        }        // Equipment Set Functions
+        function addEquipmentSet() {
+            if (!currentSlotData.itemManager.sets) {
+                currentSlotData.itemManager.sets = [];
+            }
+
+            const newSet = {
+                Name: `Equipment Set ${currentSlotData.itemManager.sets.length + 1}`,
+                Type: 'casual',
+                EquippedItems: []
+            };
+
+            currentSlotData.itemManager.sets.push(newSet);
+            updateManagersForSlot();
+            showAlert('✅ Equipment set added!', 'success');
+        }
+
+        function removeEquipmentSet(index) {
+            if (confirm('Remove this equipment set?')) {
+                currentSlotData.itemManager.sets.splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Equipment set removed!', 'success');
+            }
+        }
+
+        function updateEquipmentSet(index, field, value) {
+            const set = currentSlotData.itemManager.sets[index];
+            if (field === 'name') {
+                set.Name = value;
+            } else if (field === 'type') {
+                set.Type = value;
+            }
+            showAlert('✅ Equipment set updated!', 'success');
+        }
+
+        function editEquipmentSetItems(setIndex) {
+            const set = currentSlotData.itemManager.sets[setIndex];
+            const items = currentSlotData.itemManager.items || [];
+
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <h4>Edit Items in "${set.Name}"</h4>
+                    <p>Select items to add to this equipment set:</p>
+                </div>
+                <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+            `;
+
+            if (items.length === 0) {
+                html += '<p>No individual items available. Create some individual items first.</p>';
+            } else {
+                items.forEach((item, itemIndex) => {
+                    const isInSet = set.EquippedItems && set.EquippedItems.some(setItem =>
+                        (setItem.Name || setItem.name) === (item.Name || item.name)
+                    );
+
+                    html += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee;">
+                            <span>${item.Name || item.name || 'Unnamed Item'}</span>
+                            <button class="btn ${isInSet ? 'btn-danger' : 'btn-success'}" 
+                                    onclick="${isInSet ? `removeItemFromSet(${setIndex}, '${item.Name || item.name}')` : `addItemToSet(${setIndex}, ${itemIndex})`}">
+                                ${isInSet ? 'Remove from Set' : 'Add to Set'}
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '</div>';
+
+            // Show in a modal-like overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+                background: rgba(0,0,0,0.5); z-index: 1000; 
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white; padding: 20px; border-radius: 8px; 
+                max-width: 600px; width: 90%; max-height: 80%; overflow-y: auto;
+            `;
+
+            modal.innerHTML = html + `
+                <div style="margin-top: 15px; text-align: right;">
+                    <button class="btn btn-secondary" onclick="this.closest('.overlay').remove(); updateManagersForSlot();">Close</button>
+                </div>
+            `;
+
+            overlay.className = 'overlay';
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+        }
+
+        function addItemToSet(setIndex, itemIndex) {
+            const set = currentSlotData.itemManager.sets[setIndex];
+            const item = currentSlotData.itemManager.items[itemIndex];
+
+            if (!set.EquippedItems) {
+                set.EquippedItems = [];
+            }
+
+            // Check if item is already in set
+            const exists = set.EquippedItems.some(setItem =>
+                (setItem.Name || setItem.name) === (item.Name || item.name)
+            );
+
+            if (!exists) {
+                set.EquippedItems.push({ ...item });
+                showAlert('✅ Item added to set!', 'success');
+                // Refresh the modal
+                editEquipmentSetItems(setIndex);
+            } else {
+                showAlert('⚠️ Item already in set!', 'warning');
+            }
+        }
+
+        function removeItemFromSet(setIndex, itemIdentifier) {
+            const set = currentSlotData.itemManager.sets[setIndex];
+            if (typeof itemIdentifier === 'number') {
+                // Remove by index
+                set.EquippedItems.splice(itemIdentifier, 1);
+            } else {
+                // Remove by name
+                set.EquippedItems = set.EquippedItems.filter(item =>
+                    (item.Name || item.name) !== itemIdentifier
+                );
+            }
+            showAlert('✅ Item removed from set!', 'success');
+
+            // Check if we're in the modal view
+            const overlay = document.querySelector('.overlay');
+            if (overlay) {
+                editEquipmentSetItems(setIndex);
+            } else {
+                updateManagersForSlot();
+            }
+        }
+
+        // Individual Item Functions
+        function addIndividualItem() {
+            if (!currentSlotData.itemManager.items) {
+                currentSlotData.itemManager.items = [];
+            }
+
+            const newItem = {
+                Name: `Item ${currentSlotData.itemManager.items.length + 1}`,
+                Category: 'clothing',
+                Condition: 100,
+                Price: 0
+            };
+
+            currentSlotData.itemManager.items.push(newItem);
+            updateManagersForSlot();
+            showAlert('✅ Individual item added!', 'success');
+        }
+
+        function removeIndividualItem(index) {
+            if (confirm('Remove this individual item?')) {
+                currentSlotData.itemManager.items.splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Individual item removed!', 'success');
+            }
+        }
+
+        function updateIndividualItem(index, field, value) {
+            const item = currentSlotData.itemManager.items[index];
+
+            switch (field) {
+                case 'name':
+                    item.Name = value;
+                    break;
+                case 'category':
+                    item.Category = value;
+                    break;
+                case 'condition':
+                    item.Condition = parseInt(value) || 0;
+                    break;
+                case 'price':
+                    item.Price = parseFloat(value) || 0;
+                    break;
+            }
+
+            showAlert('✅ Individual item updated!', 'success');
+        }
+
+        // Nun Repair Order Functions
+        function addNunRepairOrder() {
+            if (!currentSlotData.itemManager.nunRepairOrders) {
+                currentSlotData.itemManager.nunRepairOrders = [];
+            }
+
+            const newOrder = {
+                ItemName: 'Item to Repair',
+                Cost: 10.00,
+                Status: 'pending'
+            };
+
+            currentSlotData.itemManager.nunRepairOrders.push(newOrder);
+            updateManagersForSlot();
+            showAlert('✅ Nun repair order added!', 'success');
+        }
+
+        function removeNunRepairOrder(index) {
+            if (confirm('Remove this nun repair order?')) {
+                currentSlotData.itemManager.nunRepairOrders.splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Nun repair order removed!', 'success');
+            }
+        }
+
+        function updateNunRepairOrder(index, field, value) {
+            const order = currentSlotData.itemManager.nunRepairOrders[index];
+
+            switch (field) {
+                case 'itemName':
+                    order.ItemName = value;
+                    break;
+                case 'cost':
+                    order.Cost = parseFloat(value) || 0;
+                    break;
+                case 'status':
+                    order.Status = value;
+                    break;
+            }
+
+            showAlert('✅ Nun repair order updated!', 'success');
+        }
+
+        // Clothier Order Functions
+        function addClothierOrder() {
+            if (!currentSlotData.itemManager.clothierOrders) {
+                currentSlotData.itemManager.clothierOrders = [];
+            }
+
+            const newOrder = {
+                ItemName: 'Custom Item',
+                Cost: 50.00,
+                DeliveryDate: new Date().toISOString().split('T')[0],
+                Status: 'ordered'
+            };
+
+            currentSlotData.itemManager.clothierOrders.push(newOrder);
+            updateManagersForSlot();
+            showAlert('✅ Clothier order added!', 'success');
+        }
+
+        function removeClothierOrder(index) {
+            if (confirm('Remove this clothier order?')) {
+                currentSlotData.itemManager.clothierOrders.splice(index, 1);
+                updateManagersForSlot();
+                showAlert('✅ Clothier order removed!', 'success');
+            }
+        }
+
+        function updateClothierOrder(index, field, value) {
+            const order = currentSlotData.itemManager.clothierOrders[index];
+
+            switch (field) {
+                case 'itemName':
+                    order.ItemName = value;
+                    break;
+                case 'cost':
+                    order.Cost = parseFloat(value) || 0;
+                    break;
+                case 'deliveryDate':
+                    order.DeliveryDate = value;
+                    break;
+                case 'status':
+                    order.Status = value;
+                    break;
+            }
+
+            showAlert('✅ Clothier order updated!', 'success');
+        }
+
+        // Utility Functions for Item Manager
+        function clearAllItems() {
+            if (confirm('Clear all items, sets, and orders? This cannot be undone!')) {
+                currentSlotData.itemManager = {
+                    sets: [],
+                    items: [],
+                    nunRepairOrders: [],
+                    clothierOrders: []
+                };
+                updateManagersForSlot();
+                showAlert('✅ All items cleared!', 'success');
+            }
+        }
+
+        function showRawItemsData() {
+            // Switch to raw data tab
+            document.querySelectorAll('#managersContent .sub-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('[onclick="switchItemTab(\'raw\')"]').classList.add('active');
+
+            document.querySelectorAll('#managersContent .tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('rawItemTab').classList.add('active');
+        }
+
+        function exportItemsData() {
+            const itemsData = currentSlotData.itemManager;
+            const dataStr = JSON.stringify(itemsData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'items_data.json';
+            link.click();
+
+            showAlert('✅ Items data exported!', 'success');
+        }
+
+        function importItemsData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+
+                            if (confirm('Replace all current items data with imported data?')) {
+                                currentSlotData.itemManager = importedData;
+                                updateManagersForSlot();
+                                showAlert('✅ Items data imported successfully!', 'success');
+                            }
+                        } catch (error) {
+                            showAlert('❌ Error importing items data: Invalid JSON', 'danger');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            input.click();
+        }
+
+        // ===== ADVANCED COOKING MINIGAME FUNCTIONS =====
+
+        function addCookingSave() {
+            if (!currentSlotData.cookingMinigameManager) {
+                currentSlotData.cookingMinigameManager = { saves: { _s: [] } };
+            }
+            if (!currentSlotData.cookingMinigameManager.saves) {
+                currentSlotData.cookingMinigameManager.saves = { _s: [] };
+            }
+
+            const saves = currentSlotData.cookingMinigameManager.saves._s;
+            const newId = Math.max(...saves.map(s => s._key._id), 0) + 1;
+
+            const newSave = {
+                _key: {
+                    _guid: { serializedGuid: '' },
+                    _id: newId
+                },
+                _allScores: [],
+                TimesPlayed: 0,
+                TimesFinished: 0
+            };
+
+            saves.push(newSave);
+            updateManagersForSlot();
+            showAlert('✅ Cooking save added!', 'success');
+        }
+
+        function removeCookingSave(saveIndex) {
+            if (confirm('Remove this cooking save and all its scores?')) {
+                const saves = currentSlotData.cookingMinigameManager.saves._s;
+                saves.splice(saveIndex, 1);
+                updateManagersForSlot();
+                showAlert('✅ Cooking save removed!', 'success');
+            }
+        }
+
+        function updateCookingSave(saveIndex, field, value) {
+            const save = currentSlotData.cookingMinigameManager.saves._s[saveIndex];
+            save[field] = value;
+            updateManagersForSlot();
+            showAlert('✅ Cooking save updated!', 'success');
+        }
+
+        function addCookingScore(saveIndex) {
+            const save = currentSlotData.cookingMinigameManager.saves._s[saveIndex];
+
+            const newScore = {
+                GreatCount: 0,
+                GoodCount: 0,
+                BadCount: 0,
+                MissCount: 0,
+                MaxCombo: 0,
+                RawScore: 0,
+                ActiveModifiers: 0,
+                AccuracyScore: 0,
+                SongVersion: 0,
+                IsComplete: false
+            };
+
+            save._allScores.push(newScore);
+            updateManagersForSlot();
+            showAlert('✅ Cooking score added!', 'success');
+        }
+
+        function removeCookingScore(saveIndex, scoreIndex) {
+            if (confirm('Remove this cooking score?')) {
+                const save = currentSlotData.cookingMinigameManager.saves._s[saveIndex];
+                save._allScores.splice(scoreIndex, 1);
+                updateManagersForSlot();
+                showAlert('✅ Cooking score removed!', 'success');
+            }
+        }
+
+        function editCookingScore(saveIndex, scoreIndex) {
+            const save = currentSlotData.cookingMinigameManager.saves._s[saveIndex];
+            const score = save._allScores[scoreIndex];
+
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <h4>Edit Cooking Score #${scoreIndex + 1}</h4>
+                    <p>Save Slot ${save._key._id}</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">Great Count</label>
+                        <input type="number" id="editGreatCount" class="form-control" min="0" value="${score.GreatCount || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Good Count</label>
+                        <input type="number" id="editGoodCount" class="form-control" min="0" value="${score.GoodCount || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bad Count</label>
+                        <input type="number" id="editBadCount" class="form-control" min="0" value="${score.BadCount || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Miss Count</label>
+                        <input type="number" id="editMissCount" class="form-control" min="0" value="${score.MissCount || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Combo</label>
+                        <input type="number" id="editMaxCombo" class="form-control" min="0" value="${score.MaxCombo || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Raw Score</label>
+                        <input type="number" id="editRawScore" class="form-control" min="0" step="0.1" value="${score.RawScore || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Accuracy Score</label>
+                        <input type="number" id="editAccuracyScore" class="form-control" min="0" step="0.1" value="${score.AccuracyScore || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Song Version</label>
+                        <input type="number" id="editSongVersion" class="form-control" min="0" value="${score.SongVersion || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Active Modifiers</label>
+                        <input type="number" id="editActiveModifiers" class="form-control" min="0" value="${score.ActiveModifiers || 0}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Is Complete</label>
+                        <select id="editIsComplete" class="form-control">
+                            <option value="true" ${score.IsComplete ? 'selected' : ''}>Yes</option>
+                            <option value="false" ${!score.IsComplete ? 'selected' : ''}>No</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; text-align: right;">
+                    <button class="btn btn-secondary" onclick="this.closest('.overlay').remove();" style="margin-right: 10px;">Cancel</button>
+                    <button class="btn btn-success" onclick="saveCookingScoreEdit(${saveIndex}, ${scoreIndex})">Save Changes</button>
+                </div>
+            `;
+
+            // Show in a modal-like overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+                background: rgba(0,0,0,0.5); z-index: 1000; 
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                background: white; padding: 20px; border-radius: 8px; 
+                max-width: 700px; width: 90%; max-height: 80%; overflow-y: auto;
+            `;
+
+            modal.innerHTML = html;
+            overlay.className = 'overlay';
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+        }
+
+        function saveCookingScoreEdit(saveIndex, scoreIndex) {
+            const save = currentSlotData.cookingMinigameManager.saves._s[saveIndex];
+            const score = save._allScores[scoreIndex];
+
+            // Get values from the form
+            score.GreatCount = parseInt(document.getElementById('editGreatCount').value) || 0;
+            score.GoodCount = parseInt(document.getElementById('editGoodCount').value) || 0;
+            score.BadCount = parseInt(document.getElementById('editBadCount').value) || 0;
+            score.MissCount = parseInt(document.getElementById('editMissCount').value) || 0;
+            score.MaxCombo = parseInt(document.getElementById('editMaxCombo').value) || 0;
+            score.RawScore = parseFloat(document.getElementById('editRawScore').value) || 0;
+            score.AccuracyScore = parseFloat(document.getElementById('editAccuracyScore').value) || 0;
+            score.SongVersion = parseInt(document.getElementById('editSongVersion').value) || 0;
+            score.ActiveModifiers = parseInt(document.getElementById('editActiveModifiers').value) || 0;
+            score.IsComplete = document.getElementById('editIsComplete').value === 'true';
+
+            // Close modal and update display
+            document.querySelector('.overlay').remove();
+            updateManagersForSlot();
+            showAlert('✅ Cooking score updated!', 'success');
+        }
+
+        function clearCookingSaves() {
+            if (confirm('Clear all cooking saves and scores? This cannot be undone!')) {
+                if (currentSlotData.cookingMinigameManager) {
+                    currentSlotData.cookingMinigameManager.saves = { _s: [] };
+                }
+                updateManagersForSlot();
+                showAlert('✅ All cooking saves cleared!', 'success');
+            }
+        }
+
+        function exportCookingData() {
+            const cookingData = currentSlotData.cookingMinigameManager;
+            const dataStr = JSON.stringify(cookingData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'cooking_minigame_data.json';
+            link.click();
+
+            showAlert('✅ Cooking data exported!', 'success');
+        }
+
+        function importCookingData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+
+                            if (confirm('Replace all current cooking data with imported data?')) {
+                                currentSlotData.cookingMinigameManager = importedData;
+                                updateManagersForSlot();
+                                showAlert('✅ Cooking data imported successfully!', 'success');
+                            }
+                        } catch (error) {
+                            showAlert('❌ Error importing cooking data: Invalid JSON', 'danger');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            input.click();
+        }
+
+        // Tab switching functions
+        function switchMainTab(tabName) {
+            // Update main tab buttons
+            document.querySelectorAll('.main-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update main tab content
+            document.querySelectorAll('#editorSection > .tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function switchSubTab(tabName) {
+            // Update sub tab buttons
+            document.querySelectorAll('.sub-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update sub tab content
+            const parentTab = event.target.closest('.tab-content');
+            parentTab.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            parentTab.querySelector('#' + tabName + 'SubTab').classList.add('active');
+        }
+
+        // Utility functions
+        function toggleCollapsible(element) {
+            element.classList.toggle('active');
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

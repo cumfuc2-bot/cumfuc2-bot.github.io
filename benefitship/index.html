@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefitship</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <script>
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.href = 'login.html';
+        }
+    </script>
+    <header>
+        <h1>Benefitship</h1>
+        <nav>
+            <button id="mode-futa">Futa</button>
+            <button id="mode-roomie">Roomie</button>
+            <button id="mode-gallery">Gallery</button>
+        </nav>
+    </header>
+    <main>
+        <canvas id="three-canvas"></canvas>
+        <div id="ui-container">
+            <h2>Futa Mode</h2>
+            <button id="toggle-clothed">Clothed</button>
+            <button id="toggle-nude">Nude</button>
+            <div id="clothed-options">
+                <label>
+                    <input type="checkbox" id="toggle-bulge">
+                    Show Bulge
+                </label>
+                <label for="face-selector">Select Face:</label>
+                <select id="face-selector">
+                    <option value="aroused.png">Aroused</option>
+                    <option value="embarrassed_happy.png">Embarrassed Happy</option>
+                    <option value="embarrassed_sad.png">Embarrassed Sad</option>
+                    <option value="excited.png">Excited</option>
+                    <option value="genuine.png">Genuine</option>
+                    <option value="giggling.png">Giggling</option>
+                    <option value="happy_2.png">Happy 2</option>
+                    <option value="happy_3.png">Happy 3</option>
+                    <option value="happy_4.png">Happy 4</option>
+                    <option value="happy_5.png">Happy 5</option>
+                    <option value="horrified.png">Horrified</option>
+                    <option value="remorseful.png">Remorseful</option>
+                    <option value="surprised.png">Surprised</option>
+                </select>
+            </div>
+            <div id="nude-options" style="display: none">
+                <div class="nude-toggle-group">
+                    <label>
+                        <input type="checkbox" id="toggle-erect">
+                        Erect
+                    </label>
+                    <label>
+                        <input type="checkbox" id="toggle-cum" disabled>
+                        Cum
+                    </label>
+                    <label>
+                        <input type="checkbox" id="toggle-blush">
+                        Blush
+                    </label>
+                    <label>
+                        <input type="checkbox" id="toggle-sweat">
+                        Sweat
+                    </label>
+                </div>
+                <div class="nude-face-group">
+                    <label for="nude-face-selector">Select Face:</label>
+                    <select id="nude-face-selector">
+                        <option value="embarrassed_smile.png">Embarrassed Smile</option>
+                        <option value="embarrassed.png">Embarrassed</option>
+                        <option value="happy.png">Happy</option>
+                        <option value="scared.png">Scared</option>
+                        <option value="shocked.png">Shocked</option>
+                    </select>
+                </div>
+            </div>
+            <div id="roomie-options" style="display: none">
+                <h2>Roomie Mode</h2>
+                <div class="roomie-mode-selector">
+                    <button id="roomie-clothed">Clothed</button>
+                    <button id="roomie-yoga">Yoga</button>
+                    <button id="roomie-nude">Nude</button>
+                </div>
+                <div id="roomie-clothed-options">
+                    <label for="roomie-face-selector">Select Face:</label>
+                    <select id="roomie-face-selector">
+                        <option value="face_concerned.png">Concerned</option>
+                        <option value="face_eyes_closed_mild.png">Eyes Closed Mild</option>
+                        <option value="face_eyes_closed.png">Eyes Closed</option>
+                        <option value="face_giggling.png">Giggling</option>
+                        <option value="face_happy_2.png">Happy 2</option>
+                        <option value="face_happy_3.png">Happy 3</option>
+                        <option value="face_happy_4.png">Happy 4</option>
+                        <option value="face_laughing.png">Laughing</option>
+                        <option value="face_surprised_happy.png">Surprised Happy</option>
+                        <option value="face_tired.png">Tired</option>
+                        <option value="face_winking.png">Winking</option>
+                        <option value="face_wry_excitement.png">Wry Excitement</option>
+                    </select>
+                </div>
+                <div id="roomie-yoga-options" style="display: none">
+                    <label for="roomie-yoga-face-selector">Select Face:</label>
+                    <select id="roomie-yoga-face-selector">
+                        <option value="face_grinning.png">Grinning</option>
+                        <option value="face_happy.png">Happy</option>
+                        <option value="face_mystified.png">Mystified</option>
+                        <option value="face_surprised.png">Surprised</option>
+                        <option value="face_thinking.png">Thinking</option>
+                    </select>
+                </div>
+                <div id="roomie-nude-options" style="display: none">
+                    <div class="nude-toggle-group">
+                        <label>
+                            <input type="checkbox" id="roomie-toggle-blush">
+                            Blush
+                        </label>
+                        <label>
+                            <input type="checkbox" id="roomie-toggle-sweat">
+                            Sweat
+                        </label>
+                    </div>
+                    <div class="nude-face-group">
+                        <label for="roomie-nude-face-selector">Select Face:</label>
+                        <select id="roomie-nude-face-selector">
+                            <option value="face_awkward_away.png">Awkward Away</option>
+                            <option value="face_awkward_laugh.png">Awkward Laugh</option>
+                            <option value="face_embarrassed_surprised.png">Embarrassed Surprised</option>
+                            <option value="face_embarrassed.png">Embarrassed</option>
+                            <option value="face_relaxed.png">Relaxed</option>
+                            <option value="face_smile_genuine.png">Smile Genuine</option>
+                            <option value="face_smile.png">Smile</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

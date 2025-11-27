@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hazelnut Latte Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    /* Basic styling for control panels */
+    .controls {
+      position: absolute;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+    /* Style numeric inputs to be small and inline */
+    .controls input[type="number"] {
+      width: 50px;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (!localStorage.getItem('loggedIn')) {
+        window.location.href = '../login.html';
+    }
+</script>
+  <!-- Include THREE.js from a CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Main game logic -->
+  <script src="script.js"></script>
+</body>
+</html>

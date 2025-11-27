@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yukari Slot Dress Up Game</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js",
+                "lil-gui": "https://cdn.jsdelivr.net/npm/lil-gui@0.18.2/dist/lil-gui.esm.min.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <script>
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = '../login.html';
+        }
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

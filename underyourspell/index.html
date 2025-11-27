@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Your Spell</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .canvas-container {
+            flex: 3;
+            position: relative;
+        }
+
+        #characterCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+
+        select,
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .accessory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .accessory-item select {
+            width: 80%;
+        }
+
+        .accessory-item button {
+            width: 15%;
+            padding: 8px 0;
+        }
+
+        #addAccessoryBtn {
+            margin-top: 10px;
+        }
+
+        .character-select {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="characterCanvas"></canvas>
+        </div>
+        <div class="controls-container">
+            <div class="character-select">
+                <h2>Character</h2>
+                <select id="characterSelect">
+                    <option value="aisling">Aisling</option>
+                    <option value="bassant">Bassant</option>
+                    <option value="ciara">Ciara</option>
+                    <option value="gwen">Gwen</option>
+                    <option value="hope">Hope</option>
+                    <option value="lily">Lily</option>
+                    <option value="violet">Violet</option>
+                </select>
+            </div>
+
+            <div class="control-section" id="hairSection">
+                <h2>Hair</h2>
+                <select id="hairSelect"></select>
+            </div>
+
+            <div class="control-section" id="faceSection">
+                <h2>Face</h2>
+                <select id="faceSelect"></select>
+            </div>
+
+            <div class="control-section" id="armsSection">
+                <h2>Arms</h2>
+                <select id="armsSelect">
+                    <option value="armsdown">Arms Down</option>
+                    <option value="armships">Arms on Hips</option>
+                </select>
+            </div>
+
+            <div class="control-section" id="topSection">
+                <h2>Top</h2>
+                <select id="topSelect"></select>
+            </div>
+
+            <div class="control-section" id="bottomSection">
+                <h2>Bottom</h2>
+                <select id="bottomSelect">
+                    <option value="none">None</option>
+                </select>
+            </div>
+
+            <div class="control-section" id="accessoriesSection">
+                <h2>Accessories</h2>
+                <div id="accessoriesContainer">
+                    <!-- Accessory items will be added here dynamically -->
+                </div>
+                <button id="addAccessoryBtn">Add Accessory</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raven's Quest</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            min-width: 2400px;
+            /* 400 + 768 + 400 */
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 2400px;
+            height: 768px;
+            display: grid;
+            grid-template-columns: 400px 1536px 400px;
+            margin: 0 auto;
+            background: #000;
+        }
+
+        #leftControls {
+            position: sticky;
+            top: 0;
+            height: 768px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-right: 10px;
+            overflow-y: auto;
+        }
+
+        #controls {
+            position: sticky;
+            top: 0;
+            height: 768px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+            overflow-y: auto;
+        }
+
+        #renderArea {
+            width: 1536px;
+            height: 768px;
+        }
+
+        .control-group {
+            margin: 5px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .control-section {
+            margin-bottom: 10px;
+        }
+
+        .control-section>label {
+            grid-column: 1 / -1;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+            min-width: 0;
+        }
+
+        .outfit-section {
+            min-width: 0;
+        }
+
+        select {
+            width: 100%;
+            padding: 3px;
+            margin: 2px 0;
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 3px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 2px;
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        button {
+            margin: 2px;
+            padding: 3px 8px;
+            border: none;
+            border-radius: 3px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #hideUI {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            padding: 5px 10px;
+            background: rgba(76, 175, 80, 0.8);
+            border: none;
+            border-radius: 3px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // if (!localStorage.getItem('loggedIn')) {
+        //     window.location.href = '../login.html';
+        // }
+    </script>
+    <button id="hideUI" onclick="toggleUI()">Hide UI</button>
+    <div id="gameContainer">
+        <div id="leftControls">
+            <div class="control-group">
+                <label>Back Character:</label>
+                <div class="toggle-group">
+                    <label>Cum:</label>
+                    <input type="checkbox" id="back_cum_cumanal1">
+                    <button onclick="toggleBackCum('cumanal1')">Anal 1</button>
+                    <input type="checkbox" id="back_cum_cumanal2">
+                    <button onclick="toggleBackCum('cumanal2')">Anal 2</button>
+                    <input type="checkbox" id="back_cum_cumout">
+                    <button onclick="toggleBackCum('cumout')">Outside</button>
+                    <input type="checkbox" id="back_cum_cumpussy1">
+                    <button onclick="toggleBackCum('cumpussy1')">Pussy 1</button>
+                    <input type="checkbox" id="back_cum_cumpussy2">
+                    <button onclick="toggleBackCum('cumpussy2')">Pussy 2</button>
+                </div>
+                <div class="toggle-group">
+                    <label>Buttplug:</label>
+                    <input type="checkbox" id="back_buttplug_dog">
+                    <button onclick="toggleBackButtplug('buttplug_dog')">Dog</button>
+                    <input type="checkbox" id="back_buttplug_horse">
+                    <button onclick="toggleBackButtplug('buttplug_horse')">Horse</button>
+                </div>
+                <div class="toggle-group">
+                    <label>Vibrator:</label>
+                    <input type="checkbox" id="back_eggvibrator">
+                    <button onclick="toggleBackVibrator()">Egg Vibrator</button>
+                </div>
+                <div class="toggle-group">
+                    <label>Tattoos:</label>
+                    <input type="checkbox" id="back_tattoo_back1_1">
+                    <button onclick="toggleBackTattoo('back1_1')">Tattoo 1</button>
+                    <input type="checkbox" id="back_tattoo_back1_2">
+                    <button onclick="toggleBackTattoo('back1_2')">Tattoo 2</button>
+                </div>
+            </div>
+        </div>
+        <div id="renderArea"></div>
+        <div id="controls">
+            <div class="control-group">
+                <button onclick="toggleSuccubus()">Toggle Succubus</button>
+                <div class="control-section">
+                    <select id="hairSelect" onchange="changeHair(this.value)">
+                        <option value="">Select Hair Style</option>
+                        <option value="1a.png">Hair 1A</option>
+                        <option value="asuka.png">Asuka</option>
+                        <option value="lisa.png">Lisa</option>
+                        <option value="pink.png">Pink</option>
+                        <option value="raven.png">Raven</option>
+                        <option value="samus.png">Samus</option>
+                        <option value="yoko.png">Yoko</option>
+                        <option value="zelda.png">Zelda</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Wrap each section's content in control-section class -->
+            <div class="control-group">
+                <div class="control-section">
+                    <label>Grope Areas:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="grope_boobs">
+                        <button onclick="toggleGrope('boobs')">Boobs</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="grope_leg">
+                        <button onclick="toggleGrope('leg')">Leg</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="grope_pussy">
+                        <button onclick="toggleGrope('pussy')">Pussy</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="grope_thighs">
+                        <button onclick="toggleGrope('thighs')">Thighs</button>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <label>Piercings & Toys:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="piercing_nipple1">
+                        <button onclick="togglePiercing('nipple1')">Nipple 1</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="piercing_nipple2">
+                        <button onclick="togglePiercing('nipple2')">Nipple 2</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="sextoy_sextoyeggs1">
+                        <button onclick="toggleSextoy('sextoyeggs1')">Eggs</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-section">
+                    <label>Tattoos:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_arm1_1">
+                        <button onclick="toggleTattoo('arm1_1')">Arm 1</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_chest1_1">
+                        <button onclick="toggleTattoo('chest1_1')">Chest 1</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_chest1_2">
+                        <button onclick="toggleTattoo('chest1_2')">Chest 2</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_leg1_1">
+                        <button onclick="toggleTattoo('leg1_1')">Leg 1</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_leg1_2">
+                        <button onclick="toggleTattoo('leg1_2')">Leg 2</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_leg1_3">
+                        <button onclick="toggleTattoo('leg1_3')">Leg 3</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_pussy1_1">
+                        <button onclick="toggleTattoo('pussy1_1')">Pussy 1</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tattoo_pussy1_2">
+                        <button onclick="toggleTattoo('pussy1_2')">Pussy 2</button>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <label>Cum Overlays:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_creampie">
+                        <button onclick="toggleCum('creampie')">Creampie</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_boobs">
+                        <button onclick="toggleCum('boobs')">Boobs</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_arms">
+                        <button onclick="toggleCum('arms')">Arms</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_face">
+                        <button onclick="toggleCum('face')">Face</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_feet">
+                        <button onclick="toggleCum('feet')">Feet</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="cum_thighs_1">
+                        <button onclick="toggleCum('thighs_1')">Thighs</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-section">
+                    <label>Tentacles:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tentacle_tpp_bodysuit">
+                        <button onclick="toggleTentacle('tpp_bodysuit')">Bodysuit</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tentacle_tpp_head">
+                        <button onclick="toggleTentacle('tpp_head')">Head</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tentacle_tpp_leg">
+                        <button onclick="toggleTentacle('tpp_leg')">Leg</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tentacle_tpp_pussy">
+                        <button onclick="toggleTentacle('tpp_pussy')">Pussy</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="tentacle_tpp_shoulder">
+                        <button onclick="toggleTentacle('tpp_shoulder')">Shoulder</button>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <label>Buttplug:</label>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="buttplug_dog_f">
+                        <button onclick="toggleButtplug('dog_f')">Dog</button>
+                    </div>
+                    <div class="toggle-group">
+                        <input type="checkbox" id="buttplug_horse_f">
+                        <button onclick="toggleButtplug('horse_f')">Horse</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-section">
+                    <label>Head & Top:</label>
+                    <div class="outfit-section">
+                        <label>Head:</label>
+                        <select onchange="changeOutfit('head', this.value)">
+                            <option value="">None</option>
+                            <option value="head_cap_1a.png">Cap</option>
+                            <option value="head_cat_1a.png">Cat</option>
+                            <option value="head_cowgirl_1a.png">Cowgirl</option>
+                            <option value="head_idol_1a.png">Idol</option>
+                            <option value="head_kda_1a.png">KDA</option>
+                            <option value="head_lisa_1a.png">Lisa</option>
+                            <option value="head_peach_1a.png">Peach</option>
+                            <option value="head_playboy_1a.png">Playboy</option>
+                        </select>
+                    </div>
+                    <div class="outfit-section">
+                        <label>Top:</label>
+                        <select onchange="changeOutfit('top', this.value)">
+                            <option value="">None</option>
+                            <option value="top_asuka_1a.png">Asuka</option>
+                            <option value="top_badslut_1a.png">Bad Slut</option>
+                            <option value="top_bandit_1a.png">Bandit</option>
+                            <option value="top_cat_1a.png">Cat</option>
+                            <option value="top_cowgirl_1a.png">Cowgirl</option>
+                            <option value="top_cumtank_1a.png">Cum Tank</option>
+                            <option value="top_default_1a.png">Default 1</option>
+                            <option value="top_default_1b.png">Default 2</option>
+                            <option value="top_default_1c.png">Default 3</option>
+                            <option value="top_dom_1a.png">Dom</option>
+                            <option value="top_ex_1a.png">Ex</option>
+                            <option value="top_hcwhore_1a.png">HC Whore</option>
+                            <option value="top_holy_1a.png">Holy</option>
+                            <option value="top_idol_1a.png">Idol</option>
+                            <option value="top_janna_1a.png">Janna</option>
+                            <option value="top_jewel_1a.png">Jewel</option>
+                            <option value="top_kda_1a.png">KDA 1</option>
+                            <option value="top_kda_1b.png">KDA 2</option>
+                            <option value="top_leathera_1a.png">Leather</option>
+                            <option value="top_lisa_1a.png">Lisa</option>
+                            <option value="top_louis_1a.png">Louis</option>
+                            <option value="top_mbikini_1a.png">Micro Bikini</option>
+                            <option value="top_mslut_1a.png">Mini Slut</option>
+                            <option value="top_peach_1a.png">Peach</option>
+                            <option value="top_playboy_1a.png">Playboy</option>
+                            <option value="top_preg.png">Pregnant</option>
+                            <option value="top_punk_1a.png">Punk</option>
+                            <option value="top_rbunny_1a.png">Bunny</option>
+                            <option value="top_reg_1a.png">Regular</option>
+                            <option value="top_samus_1a.png">Samus</option>
+                            <option value="top_sluttysailor_1a.png">Slutty Sailor</option>
+                            <option value="top_sub_1a.png">Sub</option>
+                            <option value="top_towel_1a.png">Towel</option>
+                            <option value="top_waitress_1a.png">Waitress</option>
+                            <option value="top_whore1_1a.png">Whore</option>
+                            <option value="top_xmas_1a.png">Xmas</option>
+                            <option value="top_yoko_1a.png">Yoko</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <label>Bottom & Feet:</label>
+                    <div class="outfit-section">
+                        <label>Bottom:</label>
+                        <select onchange="changeOutfit('bottom', this.value)">
+                            <option value="">None</option>
+                            <option value="bottom_badslut_1a.png">Bad Slut</option>
+                            <option value="bottom_bandit_1a.png">Bandit</option>
+                            <option value="bottom_cat_1a.png">Cat</option>
+                            <option value="bottom_cowgirl_1a.png">Cowgirl</option>
+                            <option value="bottom_default_1a.png">Default</option>
+                            <option value="bottom_dom_1a.png">Dom</option>
+                            <option value="bottom_ex_1a.png">Ex</option>
+                            <option value="bottom_hcwhore_1a.png">HC Whore</option>
+                            <option value="bottom_idol_1a.png">Idol</option>
+                            <option value="bottom_janna_1a.png">Janna</option>
+                            <option value="bottom_kda_1a.png">KDA</option>
+                            <option value="bottom_leathera_1a.png">Leather</option>
+                            <option value="bottom_lisa_1a.png">Lisa</option>
+                            <option value="bottom_mbikini_1a.png">Micro Bikini</option>
+                            <option value="bottom_mslut_1a.png">Mini Slut</option>
+                            <option value="bottom_peach_1a.png">Peach</option>
+                            <option value="bottom_playboy_1a.png">Playboy</option>
+                            <option value="bottom_preg.png">Pregnant</option>
+                            <option value="bottom_punk_1a.png">Punk</option>
+                            <option value="bottom_rbunny_1a.png">Bunny</option>
+                            <option value="bottom_reg_1a.png">Regular</option>
+                            <option value="bottom_sub_1a.png">Sub</option>
+                            <option value="bottom_towel_1a.png">Towel</option>
+                            <option value="bottom_waitress_1a.png">Waitress</option>
+                            <option value="bottom_whore1_1a.png">Whore</option>
+                            <option value="bottom_xmas_1a.png">Xmas</option>
+                            <option value="bottom_yoko_1a.png">Yoko</option>
+                        </select>
+                    </div>
+                    <div class="outfit-section">
+                        <label>Feet:</label>
+                        <select onchange="changeOutfit('feet', this.value)">
+                            <option value="">None</option>
+                            <option value="feet_cat_1a.png">Cat</option>
+                            <option value="feet_cowgirl_1a.png">Cowgirl</option>
+                            <option value="feet_default_1a.png">Default</option>
+                            <option value="feet_dom_1a.png">Dom</option>
+                            <option value="feet_ex_1a.png">Ex</option>
+                            <option value="feet_hcwhore_1a.png">HC Whore</option>
+                            <option value="feet_idol_1a.png">Idol</option>
+                            <option value="feet_kda_1a.png">KDA</option>
+                            <option value="feet_leathera_1a.png">Leather</option>
+                            <option value="feet_lisa_1a.png">Lisa</option>
+                            <option value="feet_mslut_1a.png">Mini Slut</option>
+                            <option value="feet_peach_1a.png">Peach</option>
+                            <option value="feet_playboy_1a.png">Playboy</option>
+                            <option value="feet_punk_1a.png">Punk</option>
+                            <option value="feet_reg_1a.png">Regular</option>
+                            <option value="feet_sub_1a.png">Sub</option>
+                            <option value="feet_waitress_1a.png">Waitress</option>
+                            <option value="feet_whore1_1a.png">Whore</option>
+                            <option value="feet_xmas_1a.png">Xmas</option>
+                            <option value="feet_yoko_1a.png">Yoko</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keep full outfits at the bottom spanning both columns -->
+            <div class="control-section">
+                <label>Full Outfits:</label>
+                <div class="outfit-buttons"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px;">
+                    <button onclick="setOutfit('default')">Default</button>
+                    <button onclick="setOutfit('kda')">KDA</button>
+                    <button onclick="setOutfit('cat')">Cat</button>
+                    <button onclick="setOutfit('cowgirl')">Cowgirl</button>
+                    <button onclick="setOutfit('lisa')">Lisa</button>
+                    <button onclick="setOutfit('playboy')">Playboy</button>
+                    <button onclick="setOutfit('asuka')">Asuka</button>
+                    <button onclick="setOutfit('badslut')">Bad Slut</button>
+                    <button onclick="setOutfit('idol')">Idol</button>
+                    <button onclick="setOutfit('peach')">Peach</button>
+                    <button onclick="setOutfit('bandit')">Bandit</button>
+                    <button onclick="setOutfit('hcwhore')">High Class Whore</button>
+                    <button onclick="setOutfit('dom')">Dom</button>
+                    <button onclick="setOutfit('sub')">Sub</button>
+                    <button onclick="setOutfit('janna')">Janna</button>
+                    <button onclick="setOutfit('leather')">Leather</button>
+                    <button onclick="setOutfit('microbikini')">Microbikini</button>
+                    <button onclick="setOutfit('minislut')">Mini Slut</button>
+                    <button onclick="setOutfit('punk')">Punk</button>
+                    <button onclick="setOutfit('bunny')">Bunny</button>
+                    <button onclick="setOutfit('regular')">Regular</button>
+                    <button onclick="setOutfit('sub')">Sub</button>
+                    <button onclick="setOutfit('towel')">Towel</button>
+                    <button onclick="setOutfit('waitress')">Waitress</button>
+                    <button onclick="setOutfit('whore')">Whore</button>
+                    <button onclick="setOutfit('yoko')">Yoko</button>
+                    <button onclick="setOutfit('xmas')">X-Mas</button>
+
+                </div>
+            </div>
+            <div class="control-group">
+                <button onclick="randomizeCharacter()">Randomize Character</button>
+            </div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+    <script>
+        function toggleUI() {
+            const leftControls = document.getElementById('leftControls');
+            const controls = document.getElementById('controls');
+            const button = document.getElementById('hideUI');
+
+            leftControls.classList.toggle('hidden');
+            controls.classList.toggle('hidden');
+            button.textContent = leftControls.classList.contains('hidden') ? 'Show UI' : 'Hide UI';
+        }
+    </script>
+</body>
+
+</html>

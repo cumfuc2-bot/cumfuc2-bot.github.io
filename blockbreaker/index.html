@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Breakout Reveal — Web (three.js)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- three.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+</head>
+
+<body>
+    <div id="ui">
+        <div id="topbar">
+            <button id="backToGallery" style="display:none">Back to Gallery</button>
+            <span id="title">Breakout Reveal (Web)</span>
+            <span id="status"></span>
+        </div>
+
+        <div id="gallery" class="panel"></div>
+
+        <div id="gamebox" class="panel" style="display:none">
+            <div id="three-container"></div>
+            <div id="hud">
+                <div id="hudtext"></div>
+                <div id="limits"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

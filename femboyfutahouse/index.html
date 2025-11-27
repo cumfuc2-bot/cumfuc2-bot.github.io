@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Femboy Futa House</title>
+    <script src="https://unpkg.com/@esotericsoftware/spine-player@4.2.*/dist/iife/spine-player.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@esotericsoftware/spine-player@4.2.*/dist/spine-player.css" />
+    <style>
+        /* [Styles unchanged] */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        .controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls select,
+        .controls button {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .controls button {
+            background: #4a90e2;
+            border: none;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background: #357abd;
+        }
+
+        .controls button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        #player-container {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .gallery-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gallery-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .close-gallery {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .close-gallery:hover {
+            background: #c0392b;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .gallery-item-title {
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            cursor: pointer;
+        }
+
+        .image-modal img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <select id="scene-selector">
+            <option value="">Select a scene...</option>
+        </select>
+        <button id="gallery-btn" disabled>View Gallery</button>
+        <button id="randomize-btn">🎲 Randomize</button>
+    </div>
+
+    <div id="player-container"></div>
+
+    <div id="gallery-modal" class="gallery-modal">
+        <div class="gallery-content">
+            <div class="gallery-header">
+                <div class="gallery-title" id="gallery-title"></div>
+                <button class="close-gallery" onclick="closeGallery()">Close Gallery</button>
+            </div>
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="image-modal" onclick="closeImageModal()">
+        <img id="modal-image" src="" alt="">
+    </div>
+
+    <script>
+        let currentPlayer = null;
+        let currentGalleryImages = [];
+        let currentImageIndex = -1;
+        let allGalleryImages = [];
+
+        const scenes = {
+            "Bella": { hasGallery: true, galleryPath: "bella" },
+            "Bella Sex Scene 3": { hasGallery: false },
+            "Bella Sex Scene 4": { hasGallery: false },
+            "Bella Sex Scene 5": { hasGallery: false },
+            "Haisel Beads": { hasGallery: false },
+            "Hazzle": { hasGallery: true, galleryPath: "hazel" },
+            "Hazzle_sexscene_2": { hasGallery: false },
+            "Jekyll": { hasGallery: true, galleryPath: "jekyll" },
+            "Jekyll Sex Scene 3": { hasGallery: false },
+            "Jekyll Sex Scene 4": { hasGallery: false },
+            "Jekyll Sex Scene 5": { hasGallery: false },
+            "Lucy": { hasGallery: true, galleryPath: "lucy" },
+            "Lucy Sex Scene 1": { hasGallery: false },
+            "Lucy Sex Scene 3": { hasGallery: false },
+            "Lucy Sex Scene 4": { hasGallery: false },
+            "Lucy Sex Scene 5": { hasGallery: false },
+            "Morgan": { hasGallery: true, galleryPath: "morgan" },
+            "Morgan Sex Scene 3": { hasGallery: false },
+            "Morgan Sex Scene 4": { hasGallery: false },
+            "Morgan Sex Scene 5": { hasGallery: false },
+            "Ms Hyde": { hasGallery: false },
+            "Norah": { hasGallery: true, galleryPath: "Norah" },
+            "PS Norah": { hasGallery: false }
+        };
+
+        function populateSceneSelector() {
+            const selector = document.getElementById('scene-selector');
+            Object.keys(scenes).forEach(sceneName => {
+                const option = document.createElement('option');
+                option.value = sceneName;
+                option.textContent = sceneName;
+                selector.appendChild(option);
+            });
+        }
+
+        function loadScene(sceneName) {
+            if (!sceneName) return;
+
+            if (currentPlayer) {
+                currentPlayer.dispose();
+            }
+
+            try {
+                currentPlayer = new spine.SpinePlayer("player-container", {
+                    skeleton: `scenes/${sceneName}/${sceneName}.json`,
+                    atlas: `scenes/${sceneName}/${sceneName}.atlas`
+                });
+            } catch (error) {
+                console.error("Failed to load scene:", error);
+                alert("Failed to load scene: " + sceneName);
+            }
+
+            const galleryBtn = document.getElementById('gallery-btn');
+            const sceneData = scenes[sceneName];
+            if (sceneData && sceneData.hasGallery) {
+                galleryBtn.disabled = false;
+                galleryBtn.onclick = () => openGallery(sceneName, sceneData.galleryPath);
+            } else {
+                galleryBtn.disabled = true;
+                galleryBtn.onclick = null;
+            }
+        }
+
+        async function openGallery(sceneName, galleryPath) {
+            const modal = document.getElementById('gallery-modal');
+            const title = document.getElementById('gallery-title');
+            const grid = document.getElementById('gallery-grid');
+
+            title.textContent = `${sceneName} Gallery`;
+            grid.innerHTML = 'Loading...';
+            modal.style.display = 'block';
+
+            try {
+                const response = await fetch(`scenes/${sceneName}/${galleryPath}/images.json`);
+                const imageFiles = await response.json();
+
+                grid.innerHTML = '';
+
+                if (imageFiles.length === 0) {
+                    grid.innerHTML = '<p>No images found in gallery.</p>';
+                    return;
+                }
+
+                currentGalleryImages = [];
+
+                imageFiles.forEach((file, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+
+                    const img = document.createElement('img');
+                    const imgSrc = `scenes/${sceneName}/${galleryPath}/${file}`;
+                    img.src = imgSrc;
+                    img.alt = file;
+                    img.onerror = function () {
+                        this.parentElement.style.display = 'none';
+                    };
+
+                    const title = document.createElement('div');
+                    title.className = 'gallery-item-title';
+                    title.textContent = file;
+
+                    item.appendChild(img);
+                    item.appendChild(title);
+
+                    item.onclick = () => openImageModal(imgSrc, file, index);
+
+                    currentGalleryImages.push({ src: imgSrc, title: file });
+                    grid.appendChild(item);
+                });
+
+            } catch (error) {
+                grid.innerHTML = '<p>Failed to load gallery images.</p>';
+                console.error('Gallery loading error:', error);
+            }
+        }
+
+        function closeGallery() {
+            document.getElementById('gallery-modal').style.display = 'none';
+            currentGalleryImages = [];
+            currentImageIndex = -1;
+        }
+
+        function openImageModal(src, title, index = -1) {
+            const modal = document.getElementById('image-modal');
+            const img = document.getElementById('modal-image');
+            img.src = src;
+            img.alt = title;
+            currentImageIndex = index;
+            modal.style.display = 'block';
+        }
+
+        function closeImageModal() {
+            document.getElementById('image-modal').style.display = 'none';
+            currentImageIndex = -1;
+        }
+
+        function navigateToPreviousImage() {
+            if (currentGalleryImages.length === 0 || currentImageIndex <= 0) return;
+            currentImageIndex--;
+            const imageData = currentGalleryImages[currentImageIndex];
+            const img = document.getElementById('modal-image');
+            img.src = imageData.src;
+            img.alt = imageData.title;
+        }
+
+        function navigateToNextImage() {
+            if (currentGalleryImages.length === 0 || currentImageIndex >= currentGalleryImages.length - 1) return;
+            currentImageIndex++;
+            const imageData = currentGalleryImages[currentImageIndex];
+            const img = document.getElementById('modal-image');
+            img.src = imageData.src;
+            img.alt = imageData.title;
+        }
+
+        async function preloadGalleryData() {
+            allGalleryImages = [];
+
+            for (const [sceneName, sceneData] of Object.entries(scenes)) {
+                if (sceneData.hasGallery) {
+                    try {
+                        const response = await fetch(`scenes/${sceneName}/${sceneData.galleryPath}/images.json`);
+                        const imageFiles = await response.json();
+
+                        imageFiles.forEach(file => {
+                            allGalleryImages.push({
+                                src: `scenes/${sceneName}/${sceneData.galleryPath}/${file}`,
+                                title: file,
+                                sceneName
+                            });
+                        });
+                    } catch (error) {
+                        console.warn(`Failed to preload gallery data for ${sceneName}:`, error);
+                    }
+                }
+            }
+        }
+
+        function randomize() {
+            const shouldShowRandomImage = Math.random() < 0.5;
+
+            if (shouldShowRandomImage && allGalleryImages.length > 0) {
+                const randomImageData = allGalleryImages[Math.floor(Math.random() * allGalleryImages.length)];
+                openImageModal(randomImageData.src, `${randomImageData.sceneName} - ${randomImageData.title}`, -1);
+            } else {
+                const sceneNames = Object.keys(scenes);
+                const randomScene = sceneNames[Math.floor(Math.random() * sceneNames.length)];
+                document.getElementById('scene-selector').value = randomScene;
+                loadScene(randomScene);
+            }
+        }
+
+        document.getElementById('scene-selector').addEventListener('change', function () {
+            loadScene(this.value);
+        });
+
+        document.getElementById('randomize-btn').addEventListener('click', randomize);
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeGallery();
+                closeImageModal();
+            } else if (document.getElementById('image-modal').style.display === 'block') {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    navigateToPreviousImage();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    navigateToNextImage();
+                }
+            }
+        });
+
+        // Init
+        populateSceneSelector();
+        preloadGalleryData();
+    </script>
+</body>
+
+</html>
