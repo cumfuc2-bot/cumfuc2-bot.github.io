@@ -1,0 +1,281 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000;
+    color: white;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass through to canvas */
+}
+
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#instructions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity 0.5s;
+}
+
+#instructions.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#interaction-hint {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#interaction-hint.visible {
+    opacity: 1;
+}
+
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    background: #000;
+    padding: 20px;
+    z-index: 100;
+}
+
+#fullscreen-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+#fullscreen-viewer.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+    /* Fully hide to prevent clicks */
+}
+
+#viewer-img {
+    max-width: 90%;
+    max-height: 80%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid #333;
+}
+
+#viewer-controls {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+button {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: none;
+    font-size: 24px;
+}
+
+/* Main Menu */
+#main-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    pointer-events: auto;
+    display: flex;
+    gap: 10px;
+}
+
+#main-menu button {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid white;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+#main-menu button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 8px;
+    width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid #444;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #fff;
+}
+
+.modal-content textarea {
+    background: #111;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px;
+    min-height: 100px;
+    font-family: monospace;
+}
+
+.modal-content input {
+    background: #111;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 8px;
+}
+
+.album-field {
+    background: #333;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.album-field h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.close-modal {
+    margin-top: 10px;
+    background: #442222 !important;
+    border-color: #884444 !important;
+}
+
+#btn-back-lobby {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid white;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 100;
+}
+
+#btn-back-lobby.hidden {
+    display: none;
+}
+
+#btn-back-lobby:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#chat-container {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 300px;
+    pointer-events: auto;
+    transition: opacity 0.2s;
+}
+
+#chat-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#chat-input {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+#chat-input:focus {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: white;
+}
